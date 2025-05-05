@@ -4,6 +4,15 @@ from .forms import SignUpForm, PasswordResetRequestForm
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.conf import settings
+import ssl
+from django.core.mail.backends.smtp import EmailBackend
+EmailBackend.ssl_context = ssl._create_unverified_context()
+import ssl
+from django.core.mail.backends.smtp import EmailBackend
+EmailBackend.ssl_context = ssl._create_unverified_context()
+import ssl
+from django.core.mail.backends.smtp import EmailBackend
+EmailBackend.ssl_context = ssl._create_unverified_context()
 import random
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes

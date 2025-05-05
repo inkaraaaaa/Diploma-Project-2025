@@ -116,8 +116,7 @@ def home_view(request):
 
 def logout_view(request):
     logout(request)
-    comments = Comment.objects.all()
-    return render(request, 'home-be.html', {'comments': comments})
+    return redirect('home-be')
 
 def main_page(request):
     comments = Comment.objects.all()

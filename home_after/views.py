@@ -40,6 +40,7 @@ def job_list(request):
     return render(request, 'home-after.html', {'jobs': jobs, 'comments': comments, 'events': events})
 
 
+@login_required(login_url='/signin/')
 def vacancies_view(request):
     jobs = JobListing.objects.all()  # Query all job listings
     return render(request, 'draft.html', {'jobs': jobs})

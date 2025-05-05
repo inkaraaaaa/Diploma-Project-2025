@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from users.models import UserProfile, ContactMessage
-from sendreview.models import Company
+from sendreview.models import Company, Internship
+from sendreview.forms import InternshipForm
 from .forms import CompanyForm
 from vacancies.models import JobListing
 from .forms import JobListingForm
@@ -230,6 +231,38 @@ def delete_message(request, message_id):
         ContactMessage.objects.filter(id=message_id).delete()
         return JsonResponse({'success': True})
     return JsonResponse({'error': 'Invalid method'}, status=400)
+
+def internship_list(request):
+    internships = Internship.objects.select_related('user', 'company').all()
+    return render(request, 'internship_list.html', {'internships': internships})
+
+def internship_add(request):
+    if request.method == 'POST':
+        form = InternshipForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('internship_list')
+    else:
+        form = InternshipForm()
+    return render(request, 'internship_form.html', {'form': form, 'title': 'Add Internship'})
+
+def internship_edit(request, pk):
+    internship = get_object_or_404(Internship, pk=pk)
+    if request.method == 'POST':
+        form = InternshipForm(request.POST, instance=internship)
+        if form.is_valid():
+            form.save()
+            return redirect('internship_list')
+    else:
+        form = InternshipForm(instance=internship)
+    return render(request, 'internship_form.html', {'form': form, 'title': 'Edit Internship'})
+
+def internship_delete(request, pk):
+    internship = get_object_or_404(Internship, pk=pk)
+    if request.method == 'POST':
+        internship.delete()
+        return redirect('internship_list')
+    return render(request, 'internship_confirm_delete.html', {'internship': internship})
 
 
 

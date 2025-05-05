@@ -8,6 +8,7 @@ from .views import unread_messages_count, mark_messages_read, unread_messages_de
 from .views import company_list, company_edit, company_delete, company_add
 from .views import job_listing_list, job_listing_edit, job_listing_add, job_listing_delete
 from .views import application_list, application_detail, export_applicants_csv, download_cv
+from .views import internship_list, internship_add, internship_edit, internship_delete
 
 
 urlpatterns = [
@@ -25,6 +26,10 @@ urlpatterns = [
     path('admin_panel/internships/add/', job_listing_add, name='job_listing_add'),
     path('admin_panel/internships/<int:job_id>/edit/', job_listing_edit, name='job_listing_edit'),
     path('admin_panel/internships/<int:job_id>/delete/', job_listing_delete, name='job_listing_delete'),
+    path('admin_panel/doneinternships/', internship_list, name='internship_list'),
+    path('admin_panel/doneinternships/add/', internship_add, name='internship_add'),
+    path('admin_panel/doneinternships/edit/<int:pk>/', internship_edit, name='internship_edit'),
+    path('admin_panel/doneinternships/delete/<int:pk>/', internship_delete, name='internship_delete'),
     path('admin_panel/applications/', application_list, name='application_list'),
     path('admin_panel/applications/<int:job_id>/', application_detail, name='application_detail'),
     path('admin_panel/applications/<int:job_id>/export/', export_applicants_csv, name='export_applicants_csv'),

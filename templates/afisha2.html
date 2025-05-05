@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGo - Event Details</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+        * {
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --body-bg-color: #e5ecef;
+            --theme-bg-color: #fafafb;
+            --body-font: "Poppins", sans-serif;
+            --body-color: #2f2f33;
+            --active-color: #9B5DE5;
+            --active-light-color: #e1ebfb;
+            --header-bg-color: #fff;
+            --search-border-color: #efefef;
+            --border-color: #d8d8d8;
+            --alert-bg-color: #e8f2ff;
+            --subtitle-color: #83838e;
+            --inactive-color: #f0f0f0;
+            --placeholder-color: #9b9ba5;
+            --time-button: #fc5757;
+            --level-button: #5052d5;
+            --button-color: #fff;
+        }
+
+        ::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        html {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--body-bg-color);
+            font-family: var(--body-font);
+            font-size: 15px;
+            color: var(--body-color);
+            margin: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .job {
+            display: flex;
+            flex-direction: column;
+            max-width: 1400px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: var(--theme-bg-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .logo svg {
+            width: 24px;
+            margin-right: 12px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            transition: box-shadow 0.3s;
+            flex-shrink: 0;
+            padding: 0 40px;
+            white-space: nowrap;
+            background-color: var(--header-bg-color);
+            height: 60px;
+            width: 100%;
+            font-size: 14px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-menu {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-menu a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header-menu a.active {
+            color: var(--active-color);
+            font-weight: 500;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        @media screen and (max-width: 768px) {
+            .header-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background-color: var(--header-bg-color);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+            }
+
+            .header-menu.show {
+                display: flex;
+            }
+
+            .header-menu a {
+                padding: 15px;
+                text-align: center;
+                display: block;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .hamburger {
+                display: block;
+            }
+        }
+
+        /* Event page specific styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--active-color);
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: var(--active-light-color);
+        }
+
+        .event-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .event-details {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .event-title {
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .event-info {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-right: 30px;
+            margin-bottom: 10px;
+            color: var(--subtitle-color);
+        }
+
+        .info-item svg {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .event-description {
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .subscribe-button {
+            background-color: var(--active-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .subscribe-button:hover {
+            background-color: #8a4ad0;
+        }
+
+        /* New Footer Styles */
+        footer {
+            background-color: var(--header-bg-color);
+            padding: 40px 0;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .footer-info {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .footer-info h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--body-color);
+        }
+
+        .footer-info p {
+            color: var(--subtitle-color);
+            margin-top: 0;
+        }
+
+        .footer-links, .footer-contact {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links h3, .footer-contact h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: var(--body-color);
+        }
+
+        .footer-links p {
+            margin: 5px 0;
+            color: var(--subtitle-color);
+            cursor: pointer;
+        }
+
+        .footer-links p:hover {
+            color: var(--active-color);
+        }
+
+        .footer-contact p {
+            margin: 5px 0;
+            color: var(--subtitle-color);
+        }
+
+        .footer-contact a {
+            color: var(--active-color);
+            text-decoration: none;
+        }
+
+        .footer-contact a:hover {
+            text-decoration: underline;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .event-details {
+                padding: 20px;
+            }
+
+            .footer-container {
+                flex-direction: column;
+            }
+
+            .footer-info, .footer-links, .footer-contact {
+                margin-bottom: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="job">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            InternGo
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            ☰
+        </div>
+        <div class="header-menu" id="headerMenu">
+            <a href="#" class="active">Home</a>
+            <a href="#">Vacancies</a>
+            <a href="#">FAQ</a>
+            <a href="#">Logout</a>
+            <a href="#">
+                <img src="/profile/static/icons/sign_up.png" alt="User Icon" width="40" height="40">
+            </a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="container">
+            <button class="back-button" onclick="goBack()">&#x276E; Back</button>
+
+            <!-- Event Photo -->
+            <img src="/static/images/img.png" alt="Event Banner" class="event-image">
+
+            <!-- Event Details -->
+            <div class="event-details">
+                <h1 class="event-title">{{ event.title }}</h1>
+                <div class="event-info">
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        {{ event.date }}
+                    </div>
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        {{ event.time }}
+                    </div>
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        {{ event.location }}
+                    </div>
+                </div>
+
+                <!-- New Event Details -->
+                <div class="event-info">
+                    <div class="info-item">
+                        <strong>Team Info:</strong>
+                        <p>{{ event.team_info }}</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Registration Deadline:</strong>
+                        <p>{{ event.registration_deadline }}</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Category:</strong>
+                        <p>{{ event.category }}</p>
+                    </div>
+                </div>
+
+                <div class="event-description">
+                    <p>{{ event.description }}</p>
+                </div>
+
+                <button class="subscribe-button">Subscribe to Event</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-info">
+                <h2>InternGO</h2>
+                <p>InternGO - It is a platform for helping students.</p>
+            </div>
+            <div class="footer-links">
+                <h3>How it works</h3>
+                <p>Students</p>
+                <p>Companies</p>
+                <p>Career Center</p>
+            </div>
+            <div class="footer-links">
+                <h3>Platform</h3>
+                <p>Vacancies</p>
+                <p>Search</p>
+                <p>Profile</p>
+            </div>
+            <div class="footer-contact">
+                <h3>Support</h3>
+                <p>Call-center: <a href="tel:87470777777">8-747-077-77-77</a></p>
+                <p>Email: <a href="mailto:support@stu.sdu.edu.kz">support@stu.sdu.edu.kz</a></p>
+                <p>Address: Almaty, Kaskelen, Abylaikhan 1/1</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('headerMenu');
+        menu.classList.toggle('show');
+    }
+    function goBack() {
+        window.history.back();
+    }
+</script>
+</body>
+</html>

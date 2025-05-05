@@ -1,0 +1,668 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/create_resume.css' %}">
+
+        </head>
+        <body>
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-file-alt"></i>
+                    ResumeBuilder
+                </div>
+                <h1>Create Your Professional Resume</h1>
+                <p class="subtitle">Fill in your details to build a standout resume that gets you noticed by employers</p>
+            </header>
+
+            <div class="main-content">
+                <div class="form-section">
+                    <div class="step-indicator">
+                        <div class="step active">1</div>
+                        <div class="step-connector"></div>
+                        <div class="step inactive">2</div>
+                        <div class="step-connector"></div>
+                        <div class="step inactive">3</div>
+                    </div>
+
+                    <div id="success-notification" class="success-message">
+                        <i class="fas fa-check-circle"></i>
+                        Preview updated successfully!
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="personal">
+                            <i class="fas fa-user"></i> Personal Info
+                        </div>
+                        <div class="tab" data-tab="education">
+                            <i class="fas fa-graduation-cap"></i> Education
+                        </div>
+                        <div class="tab" data-tab="skills">
+                            <i class="fas fa-star"></i> Skills
+                        </div>
+                    </div>
+
+                    <form id="resume-form">
+                        <div class="tab-content active" id="personal-tab">
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="position">Desired Position</label>
+                                <input type="text" id="position" name="position" placeholder="Enter your desired position">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email address">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" name="location" placeholder="Enter your city and country">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="summary">Professional Summary</label>
+                                <textarea id="summary" name="summary" placeholder="Write a brief overview of your background and goals"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="education-tab">
+                            <div class="section-title">
+                                <i class="fas fa-graduation-cap"></i> Education
+                            </div>
+                            <div id="education-fields" class="dynamic-fields">
+                                <div class="field-group">
+                                    <button type="button" class="remove-field">×</button>
+                                    <div class="form-group">
+                                        <label>Institution</label>
+                                        <input type="text" name="school[]" placeholder="Enter university or college name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Degree</label>
+                                        <input type="text" name="degree[]" placeholder="Enter your degree and major">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Period</label>
+                                        <input type="text" name="educationPeriod[]" placeholder="Enter education period">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Additional Information</label>
+                                        <textarea name="educationDescription[]" placeholder="Enter relevant details about your education"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="add-field" id="add-education">
+                                <i class="fas fa-plus"></i> Add Education
+                            </button>
+                        </div>
+
+                        <div class="tab-content" id="skills-tab">
+                            <div class="form-group">
+                                <label for="skills">Professional Skills</label>
+                                <textarea id="skills" name="skills" placeholder="List your technical and professional skills"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="languages">Languages</label>
+                                <textarea id="languages" name="languages" placeholder="List languages you speak and proficiency level"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="certificates">Certifications</label>
+                                <textarea id="certificates" name="certificates" placeholder="List relevant certifications you've earned"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" id="update-preview">
+                                <i class="fas fa-sync-alt"></i> Update Preview
+                            </button>
+                            <button type="button" class="download-button" id="next-step">
+                                Next Step
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="preview-section">
+                    <div class="form-title">Resume Preview</div>
+                    <button type="button" class="action-button print-button no-print">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+
+                    <div id="resume-preview">
+                        <div class="preview-header">
+                            <div class="preview-name">{{ user.first_name }} {{ user.last_name }}</div>
+                            <div class="preview-position">{{ user.position }}</div>
+                            <div class="preview-contact">
+                                <span><i class="fas fa-envelope"></i>{{ user.email }}</span>
+                                <span><i class="fas fa-phone"></i> {{ user.phone_number }}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> {{ user.city }}</span>
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">
+                                <i class="fas fa-user"></i> Professional Summary
+                            </div>
+                            <p>Creative designer with a passion for intuitive user experiences. Skilled in digital product design with a focus on user-centered design principles and innovative solutions.</p>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">
+                                <i class="fas fa-graduation-cap"></i> Education
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-item-title">SDU,{{ user.university_course }} course</div>
+                                <div class="preview-item-subtitle">
+                                    <span>Bachelor</span>
+                                    <span>2018 - 2022</span>
+                                </div>
+                                <p>Graduated with honors. Specialized in interaction design and user experience research.</p>
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">
+                                <i class="fas fa-star"></i> Professional Skills
+                            </div>
+                            <div id="skills-preview">
+                                {% for skill in user.skills.all %}
+                                <span class="skill-tag">{{ skill.name }}</span>
+                                {% empty %}
+                                <span class="no-skills">No skills specified</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">
+                                <i class="fas fa-globe"></i> Languages
+                            </div>
+                            <div class="languages-container">
+                                {% for language in user.languages.all %}
+                                <span class="skill-tag">{{ language.name }}</span>
+                                {% empty %}
+                                <p>No languages specified</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            // Cache DOM elements
+            const tabs = document.querySelectorAll('.tab');
+            const addEducationBtn = document.getElementById('add-education');
+            const updatePreviewBtn = document.getElementById('update-preview');
+            const printBtn = document.querySelector('.print-button');
+            const nextStepBtn = document.getElementById('next-step');
+            const successNotification = document.getElementById('success-notification');
+            const educationFields = document.getElementById('education-fields');
+            const resumeForm = document.getElementById('resume-form');
+            const previewElement = document.getElementById('resume-preview');
+
+            // Tab switching functionality
+            tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Add active class to current tab and content
+            this.classList.add('active');
+            document.getElementById(tabId + '-tab').classList.add('active');
+        });
+        });
+
+            // Add education field
+            addEducationBtn.addEventListener('click', function() {
+            const fieldGroup = educationFields.querySelector('.field-group').cloneNode(true);
+
+            // Clear input values
+            fieldGroup.querySelectorAll('input, textarea').forEach(input => {
+            input.value = '';
+        });
+
+            // Add event listener to remove button
+            const removeBtn = fieldGroup.querySelector('.remove-field');
+            removeBtn.addEventListener('click', handleRemoveField);
+
+            educationFields.appendChild(fieldGroup);
+
+            // Add entrance animation
+            fieldGroup.style.opacity = '0';
+            fieldGroup.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+            fieldGroup.style.opacity = '1';
+            fieldGroup.style.transform = 'translateY(0)';
+        }, 10);
+        });
+
+            // Setup initial remove buttons
+            document.querySelectorAll('.remove-field').forEach(button => {
+            button.addEventListener('click', handleRemoveField);
+        });
+
+            // Remove field handler
+            function handleRemoveField() {
+            const fieldGroups = educationFields.querySelectorAll('.field-group');
+            if (fieldGroups.length > 1) {
+            const fieldGroup = this.parentElement;
+
+            // Add exit animation
+            fieldGroup.style.opacity = '0';
+            fieldGroup.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+            fieldGroup.remove();
+        }, 300);
+        }
+        }
+
+            // Update preview
+            updatePreviewBtn.addEventListener('click', function() {
+            updateResume();
+            showSuccessNotification();
+        });
+
+            // Success notification
+            function showSuccessNotification() {
+            successNotification.classList.add('visible');
+
+            setTimeout(() => {
+            successNotification.classList.remove('visible');
+        }, 3000);
+        }
+
+            // Resume updater function
+            function updateResume() {
+            // Update personal info
+            const summary = document.getElementById('summary').value || 'Creative designer with a passion for intuitive user experiences. Skilled in digital product design with a focus on user-centered design principles and innovative solutions.';
+
+
+            const contactInfo = `
+                <span><i class="fas fa-envelope"></i> ${email}</span>
+                <span><i class="fas fa-phone"></i> ${phone}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
+            `;
+            previewElement.querySelector('.preview-contact').innerHTML = contactInfo;
+
+            // Update summary
+            previewElement.querySelector('.preview-section:nth-child(2) p').textContent = summary;
+
+            // Update education section
+            updateEducation();
+
+            // Update skills section with tags
+            const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+
+            let skillsHTML = '';
+            skillsArray.forEach(skill => {
+            skillsHTML += `<span class="skill-tag">${skill}</span>`;
+        });
+
+            document.getElementById('skills-preview').innerHTML = skillsHTML || '<p>No skills added yet</p>';
+
+            // Update other sections
+            const languages = document.getElementById('languages').value || 'English (Native), French (Intermediate), Spanish (Basic)';
+            const certificates = document.getElementById('certificates').value || 'Google UX Design Certification, Nielsen Norman Group UX Certificate, Interaction Design Foundation Certification';
+
+            previewElement.querySelector('.preview-section:nth-child(5) p').textContent = languages;
+            previewElement.querySelector('.preview-section:nth-child(6) p').textContent = certificates;
+        }
+
+            // Update education section
+            function updateEducation() {
+            // Get all education field groups
+            const educationGroups = document.querySelectorAll('#education-fields .field-group');
+
+            // Get the education section in the preview
+            const educationSection = document.querySelector('.preview-section:nth-child(3)');
+
+            // Clear existing education items except the title
+            const sectionTitle = educationSection.querySelector('.preview-section-title').cloneNode(true);
+            educationSection.innerHTML = '';
+            educationSection.appendChild(sectionTitle);
+
+            // Process each education entry
+            educationGroups.forEach(group => {
+            const description = group.querySelector('textarea[name="educationDescription[]"]').value ||
+            'Graduated with honors. Specialized in interaction design and user experience research.';
+
+            // Create education item for preview
+            const educationItem = document.createElement('div');
+            educationItem.className = 'preview-item';
+            educationItem.innerHTML = `
+                <div class="preview-item-title">${institution}</div>
+                <div class="preview-item-subtitle">
+                    <span>${degree}</span>
+                    <span>${period}</span>
+                </div>
+                <p>${description}</p>
+            `;
+
+            educationSection.appendChild(educationItem);
+        });
+        }
+
+            // Print functionality
+            // Замените текущий обработчик для printBtn на этот:
+            printBtn.addEventListener('click', function() {
+            // Настройки для PDF
+            const element = document.getElementById('resume-preview');
+            const opt = {
+            margin: 10,
+            filename: 'my_resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+            // Показываем уведомление о начале генерации PDF
+            const generatingNotification = document.createElement('div');
+            generatingNotification.className = 'generating-pdf-notification';
+            generatingNotification.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            document.body.appendChild(generatingNotification);
+
+            // Генерируем PDF
+            html2pdf().from(element).set(opt).save().then(() => {
+            // Удаляем уведомление после завершения
+            generatingNotification.remove();
+        });
+        });
+
+            // Next step functionality
+
+                nextStepBtn.addEventListener('click', function() {
+                    const activeTab = document.querySelector('.tab.active');
+                    const tabs = Array.from(document.querySelectorAll('.tab'));
+                    const currentIndex = tabs.indexOf(activeTab);
+
+                    if (currentIndex < tabs.length - 1) {
+
+                        tabs[currentIndex].classList.remove('active');
+                        tabs[currentIndex + 1].classList.add('active');
+
+                        const activeTabContent = document.querySelector('.tab-content.active');
+                        activeTabContent.classList.remove('active');
+
+                        const nextTabId = tabs[currentIndex + 1].getAttribute('data-tab');
+                        document.getElementById(nextTabId + '-tab').classList.add('active');
+
+
+                        updateStepIndicator(currentIndex + 2);
+
+
+                        if (currentIndex + 1 === tabs.length - 1) {
+                            this.innerHTML = 'Save and Exit <i class="fas fa-check"></i>';
+                            this.id = 'save-exit'; // Меняем ID для последующей обработки
+                        }
+                    } else {
+
+                        saveResumeAndExit();
+                    }
+                });
+
+                function saveResumeAndExit() {
+                    // 1. Показать индикатор загрузки
+                    const loader = document.createElement('div');
+                    loader.className = 'save-loader';
+                    loader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving your resume...';
+                    document.body.appendChild(loader);
+
+                    // 2. Обновить предпросмотр перед сохранением
+                    updateResume();
+
+                    // 3. Генерация PDF (или другие действия сохранения)
+                    const element = document.getElementById('resume-preview');
+                    const opt = {
+                        margin: 10,
+                        filename: 'my_resume.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    html2pdf().from(element).set(opt).save().then(() => {
+                        // 4. После сохранения:
+                        loader.innerHTML = '<i class="fas fa-check"></i> Resume saved successfully!';
+
+                        // 5. Через 2 секунды перенаправить пользователя
+                        setTimeout(() => {
+                            window.location.href = "{% url 'user_profile' username=request.user.username %}"; // Замените на ваш URL
+                        }, 2000);
+                    });
+                }
+
+                const saveStyles = document.createElement('style');
+                document.head.appendChild(saveStyles);
+
+            // Update step indicator
+            function updateStepIndicator(step) {
+            const steps = document.querySelectorAll('.step');
+
+            steps.forEach((stepEl, index) => {
+            if (index + 1 < step) {
+            stepEl.classList.remove('active', 'inactive');
+            stepEl.classList.add('completed');
+            stepEl.innerHTML = '<i class="fas fa-check"></i>';
+        } else if (index + 1 === step) {
+            stepEl.classList.remove('inactive', 'completed');
+            stepEl.classList.add('active');
+            stepEl.textContent = index + 1;
+        } else {
+            stepEl.classList.remove('active', 'completed');
+            stepEl.classList.add('inactive');
+            stepEl.textContent = index + 1;
+        }
+        });
+
+            // Update step connectors
+            const connectors = document.querySelectorAll('.step-connector');
+            connectors.forEach((connector, index) => {
+            if (index + 1 < step) {
+            connector.classList.add('active');
+        } else {
+            connector.classList.remove('active');
+        }
+        });
+        }
+
+            // Auto-update skills as tags
+            const skillsTextarea = document.getElementById('skills');
+            skillsTextarea.addEventListener('input', function() {
+            const skillsValue = this.value;
+            if (skillsValue) {
+            const skillsArray = skillsValue.split(',').map(skill => skill.trim()).filter(skill => skill);
+            let skillsHTML = '';
+
+            skillsArray.forEach(skill => {
+            skillsHTML += `<span class="skill-tag">${skill}</span>`;
+        });
+
+            document.getElementById('skills-preview').innerHTML = skillsHTML;
+        } else {
+            document.getElementById('skills-preview').innerHTML = '<p>No skills added yet</p>';
+        }
+        });
+
+            // Real-time preview update for key fields
+            const keyInputs = document.querySelectorAll('#fullName, #position, #email, #phone, #location, #summary');
+            keyInputs.forEach(input => {
+            input.addEventListener('input', function() {
+            const field = this.id;
+            const value = this.value || this.placeholder;
+
+            switch(field) {
+            case 'fullName':
+            previewElement.querySelector('.preview-name').textContent = value;
+            break;
+            case 'position':
+            previewElement.querySelector('.preview-position').textContent = value;
+            break;
+            case 'email':
+            const emailSpan = previewElement.querySelector('.preview-contact span:nth-child(1)');
+            emailSpan.innerHTML = `<i class="fas fa-envelope"></i> ${value}`;
+            break;
+            case 'phone':
+            const phoneSpan = previewElement.querySelector('.preview-contact span:nth-child(2)');
+            phoneSpan.innerHTML = `<i class="fas fa-phone"></i> ${value}`;
+            break;
+            case 'location':
+            const locationSpan = previewElement.querySelector('.preview-contact span:nth-child(3)');
+            locationSpan.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${value}`;
+            break;
+            case 'summary':
+            previewElement.querySelector('.preview-section:nth-child(2) p').textContent = value;
+            break;
+        }
+        });
+        });
+
+            // Add subtle animation effects
+            document.querySelectorAll('.field-group, .form-group, button').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+            element.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+        });
+
+            // Initialize tooltip functionality
+            const tooltipTriggers = document.querySelectorAll('[data-tooltip]');
+            tooltipTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', showTooltip);
+            trigger.addEventListener('mouseleave', hideTooltip);
+        });
+
+            function showTooltip(e) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = this.getAttribute('data-tooltip');
+
+            tooltip.style.position = 'absolute';
+            tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            tooltip.style.color = '#fff';
+            tooltip.style.padding = '8px 12px';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.fontSize = '14px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.pointerEvents = 'none';
+
+            document.body.appendChild(tooltip);
+
+            const rect = this.getBoundingClientRect();
+            tooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+
+            this._tooltip = tooltip;
+        }
+
+            function hideTooltip() {
+            if (this._tooltip) {
+            this._tooltip.remove();
+            this._tooltip = null;
+        }
+        }
+
+            // Keyboard navigation for accessibility
+            document.addEventListener('keydown', function(e) {
+            // Enter key for buttons when focused
+            if (e.key === 'Enter') {
+            if (document.activeElement.tagName === 'BUTTON') {
+            document.activeElement.click();
+        }
+        }
+
+            // Tab navigation between form sections
+            if (e.key === 'Tab' && e.ctrlKey) {
+            e.preventDefault();
+            const activeTab = document.querySelector('.tab.active');
+            const tabs = Array.from(document.querySelectorAll('.tab'));
+            const currentIndex = tabs.indexOf(activeTab);
+
+            if (e.shiftKey) {
+            // Previous tab
+            if (currentIndex > 0) {
+            tabs[currentIndex - 1].click();
+        }
+        } else {
+            // Next tab
+            if (currentIndex < tabs.length - 1) {
+            tabs[currentIndex + 1].click();
+        }
+        }
+        }
+        });
+
+            // Add language proficiency visualizer
+            const languagesTextarea = document.getElementById('languages');
+            languagesTextarea.addEventListener('input', function() {
+            const languagesSection = previewElement.querySelector('.preview-section:nth-child(5)');
+            const languagesText = this.value;
+
+            if (languagesText) {
+            // Basic parsing of language entries
+            const languages = languagesText.split(',').map(lang => lang.trim());
+            let languagesHTML = '';
+
+            languages.forEach(lang => {
+            // Try to extract language and proficiency
+            const parts = lang.split('(');
+            if (parts.length > 1) {
+            const language = parts[0].trim();
+            const proficiency = parts[1].replace(')', '').trim();
+
+            // Determine proficiency level for visual indicator
+            let levelClass = 'beginner';
+            if (proficiency.toLowerCase().includes('native') || proficiency.toLowerCase().includes('fluent')) {
+            levelClass = 'expert';
+        } else if (proficiency.toLowerCase().includes('intermediate') || proficiency.toLowerCase().includes('advanced')) {
+            levelClass = 'intermediate';
+        }
+
+            languagesHTML += `<div class="language-item">
+                            <span>${language}</span>
+                            <span class="proficiency ${levelClass}">${proficiency}</span>
+                        </div>`;
+        } else {
+            languagesHTML += `<div class="language-item">${lang}</div>`;
+        }
+        });
+
+            // Apply styles for language proficiency visualization
+            const styleElement = document.createElement('style');
+            document.head.appendChild(styleElement);
+
+            languagesSection.querySelector('p').innerHTML = languagesHTML;
+        } else {
+            languagesSection.querySelector('p').textContent = 'No languages added yet';
+        }
+        });
+        });
+    </script>
+    </body>
+</html>

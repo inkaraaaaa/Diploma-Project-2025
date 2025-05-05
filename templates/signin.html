@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - InternGo</title>
+    <link rel="stylesheet" href="/static/css/stylesign.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <div class="form-box">
+                <h2>Sign In</h2>
+                <p>Welcome to InternGo</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-box">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" placeholder="Type..." required>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="Type..." required>
+                    </div>
+
+                    <div class="checkbox">
+                        <a href="{% url 'password_reset' %}" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Sign In</button>
+
+                    {% if form.errors %}
+                        <p style="color: red; font-size: 14px; margin-top: 10px;">Invalid Student ID or Password</p>
+                    {% endif %}
+
+                    <div class="bottom-text">
+                        <a href="signUp.html">Don't have an account?</a> 
+                     </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="image-container">
+                <img src="/static/images/photoformain.png" alt="Abstract Design">
+                <div class="overlay-text">Find Your Internship</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById("sign-in-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    
+    let formData = new FormData(this);
+    fetch("/signin/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        },
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            window.location.href = "/templates/sucsigin.html";
+        } else {
+            alert("Invalid login details");
+        }
+    });
+});
+
+        </script>
+        
+
+
+</body>
+</html>

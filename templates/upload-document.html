@@ -1,0 +1,33 @@
+
+
+{% block content %}
+<div class="upload-form">
+    <h2>Upload Document</h2>
+
+    {% if success_message %}
+    <div class="alert alert-success">
+        {{ success_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <!-- Если документ был загружен, отображаем его -->
+    {% if request.user.document_set.all %}
+    <div class="uploaded-documents">
+        <h3>Uploaded Documents:</h3>
+        <ul>
+            {% for document in request.user.document_set.all %}
+            <li>
+                <a href="{{ document.pdf_file.url }}" target="_blank">{{ document.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

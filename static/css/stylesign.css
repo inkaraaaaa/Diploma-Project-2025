@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Gilroy:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gilroy', sans-serif;
+}
+
+body {
+    display: flex;
+    
+    background: #f5f5f5;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    max-width: 90%; /* Ширина подстраивается под экран */
+    width: 100%;
+    min-height: 100vh; /* Минимальная высота 80% экрана */
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-section {
+    flex: 1; /* Занимает 50% доступного пространства */
+    background: #f8f8f8;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 300px;
+}
+
+h2 {
+    font-size: 48px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+p {
+    font-size: 12px;
+    color: #000000;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.input-box {
+    width: 100%;
+   border-color:  rgb(155,93,229);
+    margin-bottom: 24px; /* Интервал между формами */
+}
+
+.input-box label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 12px; /* Интервал между заголовком формы и полем ввода */
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc; /* Серый бордер по умолчанию */
+    border-radius: 16px;
+    font-size: 14px;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    outline: none;
+}
+
+/* Когда пользователь вводит данные */
+.input-box input:focus,
+.input-box input:not(:placeholder-shown) {
+    border-color: rgb(155, 93, 229) !important; /* Фиолетовый */
+    background-color: #f8f5fc; /* Светло-фиолетовый фон */
+    box-shadow: 0 0 8px rgba(155, 93, 229, 0.4);
+}
+
+/* Более мягкий красный бордер, если поле пустое */
+.input-box input.error {
+    border-color: #e57373 !important; /* Мягкий красный */
+    background-color: #fbe9e7; /* Светло-розовый фон */
+    box-shadow: 0 0 6px rgba(229, 115, 115, 0.5);
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none; /* Скрыто по умолчанию */
+}
+.checkbox {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.checkbox input {
+    margin-right: 10px;
+   
+}
+
+/* Стили для чекбокса */
+.checkbox input {
+    appearance: none; /* Убираем стандартный стиль */
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc; /* Серый бордер по умолчанию */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    background: white; /* Оставляем стандартный вид */
+}
+
+/* При нажатии (меняем только цвет) */
+.checkbox input:checked {
+    border-color: rgb(155, 93, 229); /* Фиолетовая рамка */
+    background-color: rgb(155, 93, 229); /* Фиолетовый фон */
+}
+
+/* Оставляем стандартный вид, но добавляем белую галочку */
+.checkbox input:checked::before {
+    content: "✔";
+    font-size: 12px;
+    color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background:rgb(155,93,229);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 32px;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #6A00E8;
+}
+
+/* Правая секция с изображением */
+.right-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.image-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    width: 475px;
+    height: 650px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Легкая тень */
+    flex-direction: column;
+    border-radius: 30px;
+}
+
+.image-container img {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.overlay-text {
+    position: absolute;
+    bottom: 45px;
+    right: 30px;
+    background: #f8f5fc;
+    padding: 8px 12px;
+    border-radius: 24px;
+    font-size: 32px;
+    font-weight: 600;
+    text-align: left;
+    border: 2px solid rgb(155, 93, 229);
+    width: auto; /* Автоматическая ширина */
+    white-space: nowrap; /* Запрещает перенос строки */
+}
+
+.bottom-text {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+a {
+    color: #4ECDC4;
+    text-decoration: none;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 24px;
+    cursor: pointer;
+}
+
+.error-box {
+    color: red;
+    background: #ffe5e5;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Элементы будут располагаться друг под другом */
+        max-width: 100%; /* Использует всю ширину экрана */
+    }
+
+    .left-section {
+        width: 100%; /* Теперь секция занимает всю ширину */
+        padding: 20px;
+    }
+
+    .right-section {
+        display: none; /* Скрываем блок на мобильных */
+    
+    }
+}

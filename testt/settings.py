@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'testt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-<<<<<<< HEAD
+
 
 DATABASES = {
     'default': {
@@ -91,12 +91,6 @@ DATABASES = {
         'PASSWORD': 'Weryfly02',
         'HOST':'127.0.0.1',
         'PORT':'5433',
-=======
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
->>>>>>> b628a7dde225962e2206d38dc5543c7fc9454fe3
     }
 }
 

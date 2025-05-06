@@ -26,6 +26,10 @@ else:
     print('Admin user already exists');
 "
 
+# Run user creation script
+echo "Creating additional users..."
+python manage.py shell < /app/add_users.py
+
 # Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear

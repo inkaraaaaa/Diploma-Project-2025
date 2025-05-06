@@ -232,10 +232,12 @@ def delete_message(request, message_id):
         return JsonResponse({'success': True})
     return JsonResponse({'error': 'Invalid method'}, status=400)
 
+@staff_required
 def internship_list(request):
     internships = Internship.objects.select_related('user', 'company').all()
     return render(request, 'internship_list.html', {'internships': internships})
 
+@staff_required
 def internship_add(request):
     if request.method == 'POST':
         form = InternshipForm(request.POST)
@@ -246,6 +248,7 @@ def internship_add(request):
         form = InternshipForm()
     return render(request, 'internship_form.html', {'form': form, 'title': 'Add Internship'})
 
+@staff_required
 def internship_edit(request, pk):
     internship = get_object_or_404(Internship, pk=pk)
     if request.method == 'POST':
@@ -257,6 +260,7 @@ def internship_edit(request, pk):
         form = InternshipForm(instance=internship)
     return render(request, 'internship_form.html', {'form': form, 'title': 'Edit Internship'})
 
+@staff_required
 def internship_delete(request, pk):
     internship = get_object_or_404(Internship, pk=pk)
     if request.method == 'POST':

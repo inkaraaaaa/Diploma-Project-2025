@@ -100,11 +100,12 @@
                             </p>
 
                             <div class="stars">
-                                {% for _ in ""|ljust:comment.rating %}
-                                <i class="fas fa-star" style="color: #fbbf24;"></i>
-                                {% endfor %}
-                                {% for _ in ""|ljust:"5"|slice:comment.rating %}
-                                <i class="far fa-star" style="color: #e2e8f0;"></i>
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= comment.rating %}
+                                        <i class="fas fa-star" style="color: #fbbf24;"></i>
+                                    {% else %}
+                                        <i class="far fa-star" style="color: #e2e8f0;"></i>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                             <p class="review-text">{{ comment.text }}</p>

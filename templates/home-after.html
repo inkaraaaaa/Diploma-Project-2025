@@ -75,7 +75,7 @@
 </section>
 
 
-    <h2 class="section-title">Vacancies</h2>
+<h2 class="section-title">Vacancies</h2>
         <div class="vacancies">
            {% for job in jobs|slice:":3" %}
           <div class="vacancy-card">
@@ -97,6 +97,7 @@
             {% endfor %}
         </div>
         <button class="more" onclick="window.location.href='{% url 'vacancies' %}'"><img src="/static/icons/Chevron_Right.svg"  width="25" height="20"></button>
+
 
         <section class="services">
             <h2 class="section-title">Services</h2>

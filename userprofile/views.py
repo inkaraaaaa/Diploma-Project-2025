@@ -7,6 +7,7 @@ from .forms import DocumentForm
 from .models import Document
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.contrib import messages
 
 
 
@@ -79,24 +80,21 @@ def edit_profile(request):
         return redirect('user_profile', username=user.username)
     return render(request, 'edit_profile.html', {'user': user})
 
-
-
-
-
 @login_required
 def upload_document(request):
-    success_message = ''
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()  # Сохраняем документ в БД
-            success_message = 'Document successfully uploaded!'
-            # Перенаправляем на страницу профиля с параметром успешной загрузки
-            return redirect(f'/user/{request.user.username}/')  # Перенаправление на профиль пользователя
+            document = form.save(commit=False)
+            document.user = request.user
+            document.save()
+            messages.success(request, 'Document successfully uploaded!')
+            return redirect(f'/user/{request.user.username}/')
     else:
         form = DocumentForm()
 
-    return render(request, 'upload-document.html', {'form': form, 'success_message': success_message})
+    return render(request, 'upload-document.html', {'form': form})
+
 
 def view_pdf(request, doc_id):
     # Получаем документ или возвращаем 404, если не найден

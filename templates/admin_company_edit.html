@@ -93,11 +93,30 @@
      </style>
 </head>
 <body>
-<h2>Edit Company: {{ company.name }}</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-    <a href="{% url 'company_list' %}">Back to list</a>
-</form>
+    <h2>Edit Company: {{ company.name }}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p>
+            <label for="{{ form.city.id_for_label }}">City</label>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                {{ form.city }}
+                <a href="{% url 'add_city' %}" title="Add city" style="font-size: 20px; text-decoration: none; color: #8a2be2;">➕</a>
+            </div>
+        </p>
+
+        {# Остальные поля формы, кроме city #}
+        {% for field in form %}
+            {% if field.name != 'city' %}
+                <p>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </p>
+            {% endif %}
+        {% endfor %}
+
+        <button type="submit">Save</button>
+        <a href="{% url 'company_list' %}">Back to list</a>
+    </form>
 </body>
+</html>

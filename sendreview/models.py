@@ -21,13 +21,6 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
-if not City.objects.filter(name="Astana").exists():
-    City.objects.create(name="Astana")
-
-if not City.objects.filter(name="Almaty").exists():
-    City.objects.create(name="Almaty")
-
-
 class Company(models.Model):
     name = models.CharField(max_length=255, unique=True)
     logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)

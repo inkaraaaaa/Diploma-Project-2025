@@ -43,3 +43,11 @@ class JobListingForm(forms.ModelForm):
             'company', 'location', 'course', 'about_role',
             'responsibilities', 'requirements', 'start_date', 'deadline', 'status'
         ]
+
+class CityForm(forms.ModelForm):
+    class Meta:
+        model = City
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Enter city name'}),
+        }

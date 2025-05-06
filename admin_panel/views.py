@@ -9,7 +9,7 @@ from sendreview.models import Company, Internship
 from sendreview.forms import InternshipForm
 from .forms import CompanyForm
 from vacancies.models import JobListing
-from .forms import JobListingForm
+from .forms import JobListingForm, CityForm
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import localtime
 from django.db.models import Count
@@ -267,6 +267,17 @@ def internship_delete(request, pk):
         internship.delete()
         return redirect('internship_list')
     return render(request, 'internship_confirm_delete.html', {'internship': internship})
+
+@staff_required
+def add_city(request):
+    if request.method == 'POST':
+        form = CityForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('company_add')  # Название url к форме добавления компании
+    else:
+        form = CityForm()
+    return render(request, 'add_city.html', {'form': form})
 
 
 

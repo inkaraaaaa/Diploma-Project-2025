@@ -95,29 +95,46 @@ a:hover {
     <h1>Add New Company</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <p>
+            <label for="{{ form.city.id_for_label }}">City</label>
+            {{ form.city }}
+            <a href="{% url 'add_city' %}" style="margin-left: 10px; font-size: 20px; text-decoration: none;">➕</a>
+        </p>
+
+        {# Отрисовка остальных полей, кроме city #}
+        {% for field in form %}
+            {% if field.name != 'city' %}
+                <p>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </p>
+            {% endif %}
+        {% endfor %}
+
         <button type="submit">Save</button>
         <a href="{% url 'company_list' %}">Cancel</a>
+
         {% if form.errors %}
-  <ul class="form-errors">
-    {% for field in form %}
-      {% for error in field.errors %}
-        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-      {% endfor %}
-    {% endfor %}
-    {% for error in form.non_field_errors %}
-      <li>{{ error }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-{% if form.logo.errors %}
-    <ul>
-        {% for error in form.logo.errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-    </form>    
-    
+            <ul class="form-errors">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if form.logo.errors %}
+            <ul>
+                {% for error in form.logo.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </form>
 </body>
+
 </html>

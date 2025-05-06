@@ -9,7 +9,7 @@ from .views import company_list, company_edit, company_delete, company_add
 from .views import job_listing_list, job_listing_edit, job_listing_add, job_listing_delete
 from .views import application_list, application_detail, export_applicants_csv, download_cv
 from .views import internship_list, internship_add, internship_edit, internship_delete
-
+from .views import add_city
 
 urlpatterns = [
     path('adminlogin/', custom_login, name='adminlogin'),
@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin_panel/companies/edit/<int:pk>/', company_edit, name='company_edit'),
     path('admin_panel/companies/delete/<int:pk>/', company_delete, name='company_delete'),
     path('admin_panel/companies/add/', company_add, name='company_add'),
+    path('admin_panel/add_cities/', add_city, name='add_city'),
     path('admin_panel/internships/', job_listing_list, name='job_listing_list'),
     path('admin_panel/internships/add/', job_listing_add, name='job_listing_add'),
     path('admin_panel/internships/<int:job_id>/edit/', job_listing_edit, name='job_listing_edit'),

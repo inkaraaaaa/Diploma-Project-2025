@@ -20,7 +20,7 @@ services:
       - POSTGRES_PASSWORD=admin
       - DJANGO_SECRET_KEY=5=pi3$)$aip_04w286vi$=1b#$ffkim*b^3@lastlln8zp5d34
       - DJANGO_DEBUG=True
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,34.32.87.142
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 15s

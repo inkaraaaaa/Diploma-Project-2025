@@ -18,18 +18,24 @@
             ☰
         </div>
         <div class="header-menu">
-            <a href="{% url 'home-after' %}" >Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'home-after' %}">Home</a>
+            {% else %}
+                <a href="{% url 'home-be' %}">Home</a>
+            {% endif %}
             <a href="{% url 'vacancies' %}">Vacancies</a>
             <a href="{% url 'faq' %}"class="active">FAQ</a>
-            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
-                {% csrf_token %}
-              </form>
-              
-              <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
-            {% if request.user.is_authenticated and request.user.username %}
-            <a href="{% url 'user_profile' username=request.user.username %}">
-                <i class="fas fa-user"></i>
-            </a>
+            {% if user.is_authenticated %}
+                <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+
+                {% if user.username %}
+                    <a href="{% url 'user_profile' username=user.username %}">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -42,7 +48,7 @@
                 <div class="text-content">
                     <h2>From which course can I look for an internship?</h2>
                     <p>You can start looking for an internship as early as your 1st or 2nd year. Many companies are willing to hire students without experience…</p>
-                    <button class="next-btn">Next</button>
+                    <button class="next-btn" onclick="window.location.href='{% url 'advices' %}'">Next</button>
                 </div>
             </div>
             <div class="slide">
@@ -50,7 +56,7 @@
                 <div class="text-content">
                     <h2>How to prepare for an internship?</h2>
                     <p>It is important to prepare a resume and portfolio in advance, as well as study employer requirements…</p>
-                    <button class="next-btn">Next</button>
+                    <button class="next-btn"  onclick="window.location.href='{% url 'advices' %}'">Next</button>
                 </div>
             </div>
         </div>

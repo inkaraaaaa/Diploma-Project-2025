@@ -86,12 +86,12 @@ WSGI_APPLICATION = 'testt.wsgi.application'
 # Get database settings from environment or use default values
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB', 'intern_go'),
-        'USER': os.environ.get('POSTGRES_USER', 'admin'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'admin'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'db'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'intern_go',
+        'USER': 'postgres',
+        'PASSWORD': 'Weryfly02',
+        'HOST': '127.0.0.1',
+        'PORT': '5433',
     }
 }
 

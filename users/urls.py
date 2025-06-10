@@ -29,6 +29,7 @@ urlpatterns = [
     path('contact-success/', contact_success_view, name='contact_success'),
     path('logout/', logout_view, name='logout'),
     path('', home_before_login, name='home-be'),
+    path('home-be/', home_before_login),
     path('', main_page),
     path("password_reset/", password_reset_request, name="password_reset"),
     path("reset/<uidb64>/<token>/", password_reset_confirm, name="password_reset_confirm"),

@@ -31,12 +31,37 @@
         <h1 class="page-title">Account</h1>
         <div class="header-actions">
             <button class="icon-button"><i class="fas fa-bell"></i></button>
+            <button class="icon-button" onclick="openSettingsModal()">
+                <i class="fas fa-cog"></i> <!-- Используйте fa-cog вместо несуществующего fa-settings -->
+            </button>
+
+            <!-- Модальное окно -->
+            <div id="settingsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSettingsModal()">&times;</span>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <div style="display: inline-flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                            <!-- Кнопка удаления профиля -->
+                            <form method="post" action="{% url 'delete_profile' %}" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="button danger" style="min-width: 160px;">
+                                    <i class="fas fa-trash"></i> Delete Profile
+                                </button>
+                            </form>
+
+                            <!-- Кнопка смены пароля -->
+                            <a href="{% url 'change_password' %}" class="button outline" style="min-width: 160px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-key" style="margin-right: 8px;"></i> Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Original dashboard section revised -->
     <div class="dashboard">
-        <!-- Card 1: About Me -->
         <div class="card">
             <h2 class="card-title">About Me</h2>
             <div class="profile-section">
@@ -82,11 +107,9 @@
             </div>
         </div>
 
-        <!-- Card 2: Account Information -->
         <div class="card">
             <h2 class="card-title">Account Information</h2>
 
-            <!-- Display Mode -->
             <div class="account-info-display">
                 <div class="profile-item"><strong>First Name:</strong> <span>{{ user.first_name }}</span></div>
                 <div class="profile-item"><strong>Last Name:</strong> <span>{{ user.last_name }}</span></div>
@@ -96,7 +119,6 @@
                 <div class="profile-item"><strong>Email:</strong> <span>{{ user.email }}</span></div>
             </div>
 
-            <!-- Edit Mode (hidden by default) -->
             <form class="account-info-form" style="display:none;" method="post" action="{% url 'edit_profile' %}">
                 {% csrf_token %}
                 <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name">
@@ -111,56 +133,117 @@
                 </div>
             </form>
 
-            <!-- Toggle Button -->
             <div class="buttons-group" style="margin-top: 24px;">
                 <button class="button outline" onclick="toggleAccountEdit()"><i class="fas fa-cog"></i> Edit Information</button>
             </div>
         </div>
 
-        <!-- Card 3: Resume -->
         <div class="card">
             <div class="resume-section">
                 <h2 class="card-title">Resume</h2>
                 <p class="resume-subtitle">Create or upload your resume to apply for internships</p>
+
                 <div class="buttons-group">
-                    <a href="#" class="button primary"
-                       onclick="window.location.href='{% url 'create_resume' %}'">
+                    <a href="{% url 'create_resume' %}" class="button primary">
                         <i class="fas fa-file-alt"></i> Create Resume</a>
-                    <a href="{% url 'upload_document' %}" class="button secondary">
+                    <a href="#" class="button secondary" onclick="toggleUploadForm()">
                         <i class="fas fa-upload"></i> Upload Resume
                     </a>
                 </div>
 
-                <!-- Сообщение об успешной загрузке документа -->
-                {% if success_message %}
-                <div class="alert alert-success">
-                    {{ success_message }}
+                <div class="upload-form" style="display: none;">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'user_profile' user.username %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Upload Document</button>
+                    </form>
                 </div>
+
+
+                {% if success_message %}
+                    <div class="alert alert-success">
+                        {{ success_message }}
+                    </div>
                 {% endif %}
 
-                <!-- Список загруженных документов -->
-                <h3>Your Documents</h3>
+                <h3>Your Document</h3>
                 <ul>
-                    {% for document in documents %}
-                    <li>
-                        <a href="{% url 'view_pdf' doc_id=document.id %}">{{ document.title }}</a>
-                    </li>
-                    {% empty %}
-                    <p>No documents uploaded yet.</p>
-                    {% endfor %}
+                    {% if documents %}
+                        {% with last_document=documents.last %}
+                            <li>
+                                <a href="{% url 'view_pdf' doc_id=last_document.id %}">{{ last_document.title }}</a>
+                            </li>
+                        {% endwith %}
+                    {% else %}
+                        <p>No documents uploaded yet.</p>
+                    {% endif %}
                 </ul>
 
+
             </div>
 
-            <h2 class="card-title" style="margin-top: 40px;">Social Networks</h2>
-            <div class="social-grid">
-                <a href="#" class="social-item"><div class="social-icon instagram"><i class="fab fa-instagram"></i></div><span class="social-name">Instagram</span></a>
-                <a href="#" class="social-item"><div class="social-icon telegram"><i class="fab fa-telegram-plane"></i></div><span class="social-name">Telegram</span></a>
-                <a href="#" class="social-item"><div class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></div><span class="social-name">WhatsApp</span></a>
+            <div class="card">
+                <h2 class="card-title">Social Networks</h2>
+
+                <div class="social-networks-display">
+                    <div class="profile-item">
+                        <strong>LinkedIn:</strong>
+                        {% if user.linkedin %}
+                            <a href="{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                    <div class="profile-item">
+                        <strong>GitHub:</strong>
+                        {% if user.github %}
+                            <a href="{{ user.github }}" target="_blank">{{ user.github }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                    <div class="profile-item">
+                        <strong>Twitter:</strong>
+                        {% if user.twitter %}
+                            <a href="{{ user.twitter }}" target="_blank">{{ user.twitter }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                    <div class="profile-item">
+                        <strong>Facebook:</strong>
+                        {% if user.facebook %}
+                            <a href="{{ user.facebook }}" target="_blank">{{ user.facebook }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form class="social-networks-form" style="display:none;" method="post" action="{% url 'edit_social_networks' %}">
+                    {% csrf_token %}
+                    <input type="url" name="linkedin" placeholder="LinkedIn URL" value="{{ user.linkedin }}">
+                    <input type="url" name="github" placeholder="GitHub URL" value="{{ user.github }}">
+                    <input type="url" name="twitter" placeholder="Twitter URL" value="{{ user.twitter }}">
+                    <input type="url" name="facebook" placeholder="Facebook URL" value="{{ user.facebook }}">
+                    <div class="buttons-group" style="margin-top: 16px;">
+                        <button type="submit" class="button primary">Save</button>
+                        <button type="button" class="button outline" onclick="toggleSocialEdit()">Cancel</button>
+                    </div>
+                </form>
+
+                <div class="buttons-group" style="margin-top: 24px;">
+                    <button class="button outline" onclick="toggleSocialEdit()"><i class="fas fa-cog"></i> Edit Information</button>
+                </div>
             </div>
+
         </div>
+
+        </div>
+
+
     </div>
-    </div>
+
 </div>
 
 <!-- Upload Photo Modal -->
@@ -185,6 +268,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
 <script>
@@ -239,11 +325,9 @@
         const formData = new FormData();
         formData.append('photo', file);
 
-        // CSRF-токен
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         formData.append('csrfmiddlewaretoken', csrfToken);
 
-        // Индикатор загрузки
         const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
         const originalText = saveBtn.innerHTML;
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
@@ -264,7 +348,6 @@
                 })
                 .then(data => {
                     if (data.status === 'success') {
-                        // Обновляем фото на странице
                         const profilePhoto = document.querySelector('.profile-photo');
                         profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();  // Добавляем timestamp для избежания кэширования
                         closePhotoModal();
@@ -294,6 +377,36 @@
         const form = document.querySelector('.account-info-form');
         display.style.display = display.style.display === 'none' ? 'block' : 'none';
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function toggleUploadForm() {
+        const uploadForm = document.querySelector('.upload-form');
+        if (uploadForm.style.display === 'none' || uploadForm.style.display === '') {
+            uploadForm.style.display = 'block';
+        } else {
+            uploadForm.style.display = 'none';
+        }
+    }
+    function toggleSocialEdit() {
+        const display = document.querySelector('.social-networks-display');
+        const form = document.querySelector('.social-networks-form');
+        display.style.display = display.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+
+    function openSettingsModal() {
+        document.getElementById("settingsModal").style.display = "block";
+    }
+
+    function closeSettingsModal() {
+        document.getElementById("settingsModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("settingsModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
 </script>
 </body>

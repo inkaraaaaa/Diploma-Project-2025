@@ -1,0 +1,111 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InternGO Events</title>
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<header>
+    <div class="header">
+        <div class="logo">InternGo</div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div class="header-menu">
+            <a href="{% url 'home-after' %}" class="active">Home</a>
+            <a href="{% url 'vacancies' %}">Vacancies</a>
+            <a href="{% url 'faq' %}">FAQ</a>
+            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                {% csrf_token %}
+            </form>
+
+            <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+            {% if request.user.is_authenticated and request.user.username %}
+                <a href="{% url 'user_profile' username=request.user.username %}">
+                    <i class="fas fa-user"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <h1>WEBINAR AT SDU </h1>
+        <a class="button" href="#">Registration</a>
+    </section>
+
+    <section class="events">
+        <h2>Popular Events</h2>
+        <div class="events-list">
+            {% for event in events %}
+                <a href="{% url 'afisha2' event.id %}" class="event-card-link">
+                    <div class="event-card">
+                        {% if event.image %}
+                            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+                        {% else %}
+                            <img src="https://placehold.co/228x319" alt="No image" class="event-image">
+                        {% endif %}
+                        <h3>{{ event.title }}</h3>
+
+                        <p class="date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon icon-calendar" viewBox="0 0 16 16">
+                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3v-.5a.5.5 0 0 1 .5-.5zM2.5 2a.5.5 0 0 0-.5.5V3h12v-.5a.5.5 0 0 0-.5-.5h-11z"/>
+                            </svg>
+                            {{ event.date|date:"d M Y" }}
+                        </p>
+
+                        <p class="location">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon icon-location" viewBox="0 0 16 16">
+                                <path d="M8 0a5 5 0 0 0-5 5c0 4.25 5 11 5 11s5-6.75 5-11a5 5 0 0 0-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+                            </svg>
+                            {{ event.location }}
+                        </p>
+                    </div>
+
+                </a>
+                {% empty %}
+                <p>No events available right now.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</main>
+
+<footer>
+
+    <div class="container footer-container">
+        <div class="footer-info">
+            <h2>InternGO</h2>
+            <p>InternGO - It is a platform for helping students.</p>
+        </div>
+        <div class="footer-links">
+            <h3>How it works</h3>
+            <p>Students</p>
+            <p>Companies</p>
+            <p>Career Center</p>
+        </div>
+        <div class="footer-links">
+            <h3>Platform</h3>
+            <p>Vacancies</p>
+            <p>Search</p>
+            <p>Profile</p>
+        </div>
+        <div class="footer-contact">
+            <h3>Support</h3>
+            <p>Call-center: <a href="tel:87470777777">8-747-077-77-77</a></p>
+            <p>Email: <a href="mailto:support@stu.sdu.edu.kz">support@stu.sdu.edu.kz</a></p>
+            <p>Address: Almaty, Kaskelen, Abylaikhan 1/1</p>
+        </div>
+    </div>
+
+</footer>
+</body>
+<script>
+    function toggleMenu() {
+        const menu = document.querySelector('.header-menu');
+        menu.classList.toggle('active');
+    }
+</script>
+</html>

@@ -37,3 +37,4 @@ def add_comment(request, company_id):
         return JsonResponse({"success": True})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+

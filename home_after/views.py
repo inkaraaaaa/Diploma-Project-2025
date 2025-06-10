@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from userprofile.models import Document
 from userprofile.forms import DocumentForm
 from django.shortcuts import redirect
+from .forms import EventForm
 
 
 
@@ -94,3 +95,19 @@ def featured_events(request):
 def afisha2_view(request, id):
     event = get_object_or_404(Event, id=id)
     return render(request, 'afisha2.html', {'event': event})
+
+def events_view(request):
+    events = Event.objects.all().order_by('-date')[:6]
+    return render(request, 'events.html', {'events': events})
+
+def create_event(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    else:
+        form = EventForm()
+    return render(request, 'event_form.html', {'form': form})
+
+def advice_view(request):
+    return render(request, 'advices.html')

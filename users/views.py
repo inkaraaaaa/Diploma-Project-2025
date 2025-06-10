@@ -29,6 +29,8 @@ from django.shortcuts import redirect, render
 from vacancies.models import JobListing
 from sendreview.models import Comment
 from users.models import UserProfile
+from django.contrib.auth.decorators import login_required
+
 
 
 def signup(request):
@@ -131,6 +133,7 @@ def main_page(request):
     comments = Comment.objects.all()
     return render(request, 'home-be.html', {'comments': comments})
 
+@login_required(login_url='signin')
 def vacancies(request):
     comments = Comment.objects.all()
     return render(request, 'home-be.html', {'comments': comments})

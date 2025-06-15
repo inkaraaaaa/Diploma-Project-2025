@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Password - InternGO</title>
+  <link rel="stylesheet" href="/static/css/stylesign.css" />
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    overflow-x: hidden; /* запрет на горизонтальный скролл */
+  }
+
+  .chart-container {
+    display: flex;
+    flex-direction: column; /* каждый график в колонку */
+    align-items: center;
+    gap: 40px;
+    padding: 20px;
+  }
+
+  .chart-box {
+    width: 90%; /* адаптивная ширина */
+    max-width: 800px; /* максимум ширины графика */
+  }
+
+  h2, h3 {
+    text-align: center;
+  }
+</style>
+
+</head>
+<body>
+
+  <h2>Statistics</h2>
+
+  <div class="chart-container">
+    <div class="chart-box">
+      <h3>Top-5 Companies</h3>
+      {{ company_chart|safe }}
+    </div>
+
+    <div class="chart-box">
+      <h3>Top-10 Jobs by Applications</h3>
+      {{ job_chart|safe }}
+    </div>
+
+    <div class="chart-box">
+      <h3>Monthly Vacancy Trend</h3>
+      {{ trend_chart|safe }}
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finalize Registration</title>
+    <link rel="stylesheet" href="/static/css/form.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Finalize HR Registration</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>

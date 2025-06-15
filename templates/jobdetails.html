@@ -8,273 +8,331 @@
     <link rel="stylesheet" href="{% static 'css/jobdetails.css' %}">
     <link rel="stylesheet" href="{% static 'css/variable.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<style>
-    :root {
-        /* Основные цвета фона */
-        --body-bg-color: #f8f9fa;
-        --theme-bg-color: #ffffff;
-        --header-bg-color: #fff;
+    <style>
+        :root {
+            --body-bg-color: #f8f9fa;
+            --theme-bg-color: #ffffff;
+            --header-bg-color: #fff;
+            --body-color: #2d3748;
+            --subtitle-color: #718096;
+            --placeholder-color: #a0aec0;
+            --active-color: #9B5DE5;
+            --active-light-color: #ede9fe;
+            --search-border-color: #e2e8f0;
+            --border-color: #e2e8f0;
+            --inactive-color: #f1f5f9;
+            --alert-bg-color: #e8f2ff;
+            --time-button: #ef4444;
+            --level-button: #4f46e5;
+            --button-color: #fff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-        /* Текстовые цвета */
-        --body-color: #2d3748;
-        --subtitle-color: #718096;
-        --placeholder-color: #a0aec0;
+        body {
+            background-color: var(--body-bg-color);
+            color: var(--body-color);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
 
-        /* Акцентные цвета */
-        --active-color: #9B5DE5;
-        --active-light-color: #ede9fe;
-
-        /* Цвета для границ и элементов */
-        --search-border-color: #e2e8f0;
-        --border-color: #e2e8f0;
-        --inactive-color: #f1f5f9;
-
-        /* Цвета для уведомлений и особых элементов */
-        --alert-bg-color: #e8f2ff;
-
-        /* Цвета кнопок */
-        --time-button: #ef4444;
-        --level-button: #4f46e5;
-        --button-color: #fff;
-
-        /* Тени */
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-
-    body {
-        background-color: var(--body-bg-color);
-        color: var(--body-color);
-        font-family: 'Poppins', sans-serif;
-        line-height: 1.6;
-    }
-
-    .title-bar {
-        background-color: var(--header-bg-color);
-        padding: 1.5rem 2rem;
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .title-bar h2 {
-        font-weight: 600;
-        font-size: 2rem;
-        margin: 0;
-    }
-
-    .back-button {
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        color: var(--active-color);
-        cursor: pointer;
-        font-weight: 500;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: background-color 0.2s;
-    }
-
-    .back-button:hover {
-        background-color: var(--active-light-color);
-    }
-
-    main {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        padding: 2rem;
-        box-shadow: var(--shadow-md);
-        margin-bottom: 2rem;
-    }
-
-    .job-header {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .company-logo {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        object-fit: cover;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .company-logo:hover {
-        transform: scale(1.05);
-    }
-
-    .job-info h3 {
-        font-weight: 600;
-        font-size: 1.5rem;
-        margin: 0 0 0.25rem 0;
-        color: var(--body-color);
-    }
-
-    .job-info p {
-        color: var(--subtitle-color);
-        margin: 0;
-        font-size: 0.95rem;
-    }
-
-    .tags {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        margin-bottom: 2rem;
-    }
-
-    .tags span {
-        background-color: var(--active-light-color);
-        color: var(--active-color);
-        padding: 0.4rem 0.8rem;
-        border-radius: 2rem;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-    h4 {
-        font-weight: 600;
-        font-size: 1.25rem;
-        margin: 1.5rem 0 1rem 0;
-        color: var(--body-color);
-    }
-
-    p {
-        color: var(--body-color);
-        margin-bottom: 1rem;
-    }
-
-    ul {
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    li {
-        margin-bottom: 0.5rem;
-        color: var(--body-color);
-    }
-
-    .button-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 2rem;
-    }
-
-    .apply-button {
-        background-color: var(--active-color);
-        color: white;
-        border: none;
-        padding: 0.8rem 2rem;
-        border-radius: 2rem;
-        font-weight: 500;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s, transform 0.2s;
-        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2), 0 2px 4px -1px rgba(124, 58, 237, 0.1);
-    }
-
-    .apply-button:hover {
-        background-color: #6d28d9;
-        transform: translateY(-2px);
-    }
-
-    @media (max-width: 768px) {
         .title-bar {
-            padding: 1rem;
+            background-color: var(--header-bg-color);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-bar h2 {
+            font-weight: 600;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--active-color);
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: var(--active-light-color);
         }
 
         main {
-            padding: 0 1rem;
-        }
-
-        .job-card {
-            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            background-color: var(--theme-bg-color);
+            border-radius: 1rem;
         }
 
         .job-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .company-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .job-info h3 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin: 0 0 0.25rem 0;
+            color: var(--body-color);
+        }
+
+        .job-info p {
+            color: var(--subtitle-color);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tags span {
+            background-color: var(--active-light-color);
+            color: var(--active-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        h4 {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 1.5rem 0 1rem 0;
+            color: var(--body-color);
+        }
+
+        p, li {
+            color: var(--body-color);
+        }
+
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .apply-button {
+            background-color: var(--active-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2), 0 2px 4px -1px rgba(124, 58, 237, 0.1);
+        }
+
+        .apply-button:hover {
+            background-color: #6d28d9;
+            transform: translateY(-2px);
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: var(--theme-bg-color);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content textarea {
+            width: 95%;
+            min-height: 150px;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            background-color: var(--theme-bg-color);
+            box-shadow: var(--shadow-sm);
+            margin-top: 0.5rem;           
+        }
+
+        @media (max-width: 768px) {
+            .title-bar {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .job-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="title-bar">
+    <button class="back-button" onclick="goBack()">&#x276E; Back</button>
+    <h2>Job Detail</h2>
+</div>
+<main>
+    <section class="job-card">
+        <div class="job-header">
+            <img src="{% static 'images/airba_fresh.png' %}"
+                 onclick="window.location.href='{% url 'company_detail' job.company.id %}'"
+                 alt="{{ job.company }} Logo"
+                 class="company-logo">
+            <div class="job-info">
+                <h3>{{ job.title }}</h3>
+                <p>{{ job.company }} · {{ job.location }}</p>
+            </div>
+        </div>
+        <div class="tags">
+            <span>{{ job.job_type }}</span>
+            <span>{{ job.level }}</span>
+            <span>{{ job.course }}</span>
+        </div>
+        <h4>About this role</h4>
+        <p>{{ job.description }}</p>
+        <h4>Responsibilities</h4>
+        <ul>
+            {% for responsibility in job.responsibilities.splitlines %}
+            <li>{{ responsibility }}</li>
+            {% endfor %}
+        </ul>
+        <h4>Requirements</h4>
+        <ul>
+            {% for requirement in job.requirements.splitlines %}
+            <li>{{ requirement }}</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Кнопка открытия модального окна -->
+        <div class="button-container">
+            <button class="apply-button" onclick="openModal()">Apply this job</button>
+        </div>
+
+        <!-- Модальное окно -->
+        <div class="modal" id="applicationModal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+                <h3>Submit your application</h3>
+                <form method="POST" action="{% url 'apply_job' job.id %}">
+                    {% csrf_token %}
+                    <label for="cover_letter"><strong>Cover Letter</strong></label>
+                    <textarea name="cover_letter" id="cover_letter" placeholder="Write your cover letter..."></textarea>
+                    <button type="submit" class="apply-button" style="margin-top: 1rem;">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+</main>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    function openModal() {
+        document.getElementById("applicationModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("applicationModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("applicationModal");
+        if (event.target === modal) {
+            closeModal();
         }
     }
-</style>
-<body>
-    <div class="title-bar">
-        <button class="back-button" onclick="goBack()">&#x276E; Back</button>
-        <h2>Job Detail</h2>
-    </div>
-    <main>
-        <section class="job-card">
-            <div class="job-header">
-                <img src="{% static 'images/airba_fresh.png' %}"
-                     onclick="window.location.href='{% url 'company_detail' job.company.id %}'"
-                     alt="{{ job.company }} Logo"
-                     class="company-logo">
-                <div class="job-info">
-                    <h3>{{ job.title }}</h3>
-                    <p>{{ job.company }} · {{ job.location }}</p>
-                </div>
-            </div>
-            <div class="tags">
-                <span>{{ job.job_type }}</span>
-                <span>{{ job.level }}</span>
-                <span>{{ job.course }}</span>
-            </div>
-            <h4>About this role</h4>
-            <p>{{ job.description }}</p>
-            <h4>Responsibilities</h4>
-            <ul>
-                {% for responsibility in job.responsibilities.splitlines %}
-                <li>{{ responsibility }}</li>
-                {% endfor %}
-            </ul>
-            <h4>Requirements</h4>
-            <ul>
-                {% for requirement in job.requirements.splitlines %}
-                <li>{{ requirement }}</li>
-                {% endfor %}
-            </ul>
-            <div class="button-container">
-                <button class="apply-button" onclick="location.href='{% url 'apply_job' job.id %}'">
-                    Apply this job
-                </button>
-            </div>
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </section>
-    </main>
-    </body>
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    
-        function disableAndSubmit() {
-            const btn = document.querySelector('.apply-button');
-            btn.disabled = true;
-            btn.innerText = "Applying...";
-            window.location.href = "{{ request.path }}apply/";  // или форма + POST, если используешь форму
-        }
-    
-        function applyJob() {
-            alert("Application submitted successfully!");
-        }
-    </script>
-    </html>
-    
+</script>
+</body>
+</html>

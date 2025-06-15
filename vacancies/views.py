@@ -6,21 +6,31 @@ from django.contrib import messages
 from .models import JobListing, Application
 from users.models import UserProfile
 from sendreview.models import Company
+from .forms import ApplicationForm
 
 from django.db.models import Count
 
 # views.py
+
+from django.utils import timezone
+
+from django.utils import timezone
 
 def job_list(request):
     title = request.GET.get('title', '')
     job_type = request.GET.get('job_type', '')
     location = request.GET.get('location', '')
     course = request.GET.get('course', '')
-    companies_selected = request.GET.getlist('company')  # Получаем список выбранных компаний
+    companies_selected = request.GET.getlist('company')
 
-    # Фильтрация вакансий
-    jobs = JobListing.objects.all()
+    # Обновляем статусы вакансий
+    for job in JobListing.objects.all():
+        job.update_status_if_needed()
 
+    # Показываем только open-вакансии
+    jobs = JobListing.objects.filter(status='open')
+
+    # Дополнительные фильтры
     if title:
         jobs = jobs.filter(title__icontains=title)
     if job_type:
@@ -30,9 +40,8 @@ def job_list(request):
     if course:
         jobs = jobs.filter(course__icontains=course)
     if companies_selected:
-        jobs = jobs.filter(company__name__in=companies_selected)  # Фильтрация по выбранным компаниям
+        jobs = jobs.filter(company__name__in=companies_selected)
 
-    # Получаем все компании для отображения в фильтре
     companies = JobListing.objects.values('company__name').distinct()
 
     return render(request, 'draft.html', {
@@ -40,7 +49,6 @@ def job_list(request):
         'companies': companies,
         'companies_selected': companies_selected,
     })
-
 
 # views.py
 
@@ -56,12 +64,25 @@ def job_list_view(request):
 @login_required
 def apply_job(request, job_id):
     job = get_object_or_404(JobListing, id=job_id)
-    student = request.user  # это уже UserProfile, если ты заменил AUTH_USER_MODEL
+    student = request.user
 
     if Application.objects.filter(student=student, job=job).exists():
         messages.warning(request, 'You have already applied for this job.')
-    else:
-        Application.objects.create(student=student, job=job)
-        messages.success(request, 'Application submitted successfully.')
+        return redirect('job_detail', job_id=job.id)
 
-    return redirect('job_detail', job_id=job.id)
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.student = student
+            application.job = job
+            application.save()
+            messages.success(request, 'Application submitted successfully.')
+            return redirect('job_detail', job_id=job.id)
+    else:
+        form = ApplicationForm()
+
+    return render(request, 'company/apply_form.html', {'job': job, 'form': form})
+
+def success_view(request):
+    return render(request, 'successent.html')

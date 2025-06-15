@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Applications</title>
+    <link rel="stylesheet" href="{% static 'css/applications.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style> 
+
+.hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+    <div class="logo">InternGo</div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="header-menu">
+        <a href="{% url 'home-after' %}">Home</a>
+        <a href="{% url 'vacancies' %}">Vacancies</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+            {% csrf_token %}
+          </form>
+          
+          <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+        <a href="#"class="active" >
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+    <h2>My Applications</h2>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Company</th>
+                <th>Applied On</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for app in applications %}
+            <tr>
+                <td>{{ app.job.title }}</td>
+                <td>{{ app.job.company.name }}</td>
+                <td>{{ app.applied_at|date:"Y-m-d" }}</td>
+                <td>
+                    {% if app.rejected %}
+                        <span class="status rejected">Rejected</span>
+                    {% elif app.invited_to_interview %}
+                        <span class="status interview show-interview" data-app-id="{{ app.id }}">Interview</span>
+
+                        {# Скрытая информация для модального окна #}
+                        {% with app.interview_set.first as interview %}
+                            {% if interview %}
+                                <div class="interview-details hidden" id="interview-{{ app.id }}">
+                                    <p><strong>Date:</strong> {{ interview.date }}</p>
+                                    <p><strong>Time:</strong> {{ interview.time }}</p>
+                                    <p><strong>Format:</strong> {{ interview.format }}</p>
+                                    <p><strong>Location:</strong> {{ interview.location }}</p>
+                                    <p><strong>Phone:</strong> {{ interview.phone }}</p>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <span class="status pending">Pending</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">You haven't applied for any internships yet.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="height: 50px;"></div>
+
+
+    <!-- ✅ МОДАЛЬНОЕ ОКНО -->
+    <div id="interviewModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body">
+                <!-- Контент из interview-details появится здесь -->
+            </div>
+        </div>
+    </div>
+
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('interviewModal');
+    const modalBody = document.getElementById('modal-body');
+    const closeBtn = document.querySelector('.modal .close');
+
+    document.querySelectorAll('.show-interview').forEach(function (el) {
+        el.addEventListener('click', function () {
+            const appId = el.getAttribute('data-app-id');
+            const details = document.getElementById('interview-' + appId);
+            if (details) {
+                // Копируем контент, удаляя класс hidden
+                const cloned = details.cloneNode(true);
+                cloned.classList.remove('hidden');  // <-- ВАЖНО
+                modalBody.innerHTML = '';
+                modalBody.appendChild(cloned);
+                modal.style.display = 'flex'; // flex вместо block (так как в стилях .modal - flex)
+            }
+        });
+    });
+
+    closeBtn.onclick = function () {
+        modal.style.display = 'none';
+    };
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    };
+});
+
+    </script>
+
+
+</body>
+</html>

@@ -9,7 +9,7 @@ from .views import company_list, company_edit, company_delete, company_add
 from .views import job_listing_list, job_listing_edit, job_listing_add, job_listing_delete
 from .views import application_list, application_detail, export_applicants_csv, download_cv
 from .views import internship_list, internship_add, internship_edit, internship_delete
-from .views import add_city
+from .views import add_city, stats_dashboard
 
 urlpatterns = [
     path('adminlogin/', custom_login, name='adminlogin'),
@@ -38,4 +38,5 @@ urlpatterns = [
     path('api/unread-messages/', unread_messages_count, name='unread-messages'),
     path('api/mark-messages-read/', mark_messages_read, name='mark-messages-read'),
     path('api/unread-messages-details/', unread_messages_details, name='unread-messages-details'),
+    path('admindashboard/', stats_dashboard, name='stats_dashboard'),
 ]

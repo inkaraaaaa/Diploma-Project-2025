@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.models import Group
+from django.utils import timezone
+from datetime import timedelta
+
 
 class Language(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -29,6 +32,7 @@ class UserProfile(AbstractUser):
     cv = models.BinaryField(null=True, blank=True)
     languages = models.ManyToManyField(Language, blank=True)
     skills = models.ManyToManyField(Skill, blank=True)
+    is_hr = models.BooleanField(default=False)
 
     user_permissions = models.ManyToManyField(
         "auth.Permission",
@@ -60,6 +64,24 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.firstname} {self.lastname} - {self.email}"
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    interview = models.ForeignKey('company.Interview', on_delete=models.CASCADE, null=True, blank=True)
+
+    def delete_old_notifications():
+        threshold = timezone.now() - timedelta(days=30)
+        Notification.objects.filter(created_at__lt=threshold).delete()
+
+
+    def __str__(self):
+        return f"Notification to {self.recipient.username}"
+    
+
 
 
 

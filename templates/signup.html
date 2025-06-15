@@ -51,6 +51,23 @@
                         <label for="agree">I agree to the <a href="#">Privacy & Policy</a></label>
                     </div>
 
+
+                {% if form.errors %}
+                <div class="error-box" style="color: red; margin-bottom: 15px;">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+
                     <button type="submit" class="submit-btn">Sign Up</button>
                 </form>
             </div>
@@ -64,75 +81,16 @@
         </div>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelector(".submit-btn").addEventListener("click", async function (event) {
-                const firstName = document.getElementById("id_first_name").value.trim();
-                const lastName = document.getElementById("id_last_name").value.trim();
-                const username = document.getElementById("id_username").value.trim();
-                const email = document.getElementById("id_email").value.trim();
-                const password = document.getElementById("id_password1").value;
-                const verifyPassword = document.getElementById("id_password2").value;
-                const agree = document.getElementById("agree").checked;
-        
-                function isValidEmail(email) {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return emailRegex.test(email);
-                }
-        
-                function isValidPassword(password) {
-                    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
-                }
-        
-                document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
-        
-                let hasError = false;
-        
-                if (!firstName || !lastName || !username || !email || !password || !verifyPassword) {
-                    alert("Please fill in all fields.");
-                    hasError = true;
-                }
-        
-                if (!isValidEmail(email)) {
-                    alert("Invalid email format.");
-                    hasError = true;
-                }
-        
-                if (!isValidPassword(password)) {
-                    alert("Password must be at least 8 characters long and include both letters and numbers.");
-                    hasError = true;
-                }
-        
-                if (password !== verifyPassword) {
-                    alert("Passwords do not match.");
-                    hasError = true;
-                }
-        
-                if (!agree) {
-                    alert("You must agree to the Privacy & Policy.");
-                    hasError = true;
-                }
-        
-                if (hasError) {
-                    event.preventDefault();
-                    return;
-                }
-        
-                // Проверяем email и username через AJAX-запрос к Django API
-                const response = await fetch(`/check_user_exists/?email=${email}&username=${username}`);
-                const data = await response.json();
-        
-                if (data.email_exists) {
-                    alert("This email is already registered.");
-                    event.preventDefault();
-                }
-        
-                if (data.username_exists) {
-                    alert("This username is already taken.");
-                    event.preventDefault();
-                }
-            });
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".submit-btn").addEventListener("click", function (event) {
+            const agree = document.getElementById("agree").checked;
+
+            if (!agree) {
+                alert("You must agree to the Privacy & Policy.");
+                event.preventDefault();
+            }
         });
-        </script>
-             
+    });
+</script>          
 </body>
 </html>

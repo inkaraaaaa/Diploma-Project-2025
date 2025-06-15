@@ -639,3 +639,31 @@ body {
 		min-width: 420px;
 	}
 }
+
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.chart-box {
+  flex: 0 0 48%;
+  max-width: 48%;
+  min-width: 300px;
+  height: 400px;
+  overflow: hidden;
+}
+
+.chart-box-full {
+  flex: 0 0 100%;
+  max-width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.chart-box > div,
+.chart-box-full > div {
+  height: 100% !important;
+}

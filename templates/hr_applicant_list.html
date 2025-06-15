@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Applicants - {{ internship.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+    <style>
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 300px;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            top: 5px; right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Applicants for: {{ internship.title }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Course</th>
+                <th>Position</th>
+                <th>CV</th>
+                <th>Cover Letter</th>
+                <th>Actions</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for app in applications %}
+            <tr {% if app.invited_to_interview %} style="background-color: lightyellow;" {% endif %}>
+                <td>{{ app.student.first_name }}</td>
+                <td>{{ app.student.last_name }}</td>
+                <td>{{ app.student.university_course }}</td>
+                <td>{{ app.student.position }}</td>
+                <td>
+                    {% with document=app.student.documents.first %}
+                        {% if document %}
+                            <a href="{% url 'download_cv' app.student.id %}" download="{{ app.student.first_name }}_{{ app.student.last_name }}.pdf">
+                                <img src="{% static 'icons/document.svg' %}" alt="CV" width="20" height="20">
+                            </a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td>
+                    {% if app.cover_letter %}
+                        <img src="{% static 'icons/check.svg' %}" alt="Yes">
+                    {% else %}
+                        <img src="{% static 'icons/cross.svg' %}" alt="No">
+                    {% endif %}
+                </td>
+                <td class="actions-cell" data-app-id="{{ app.id }}">
+                    {% if app.invited_to_interview %}
+                        <img src="{% static 'icons/check.svg' %}" alt="Interview Scheduled">
+                        <img src="{% static 'icons/cross.svg' %}" alt="Reject">
+                    {% else %}
+                        <a href="#" class="open-interview-modal" data-app-id="{{ app.id }}">
+                            <img src="{% static 'icons/interview.svg' %}" alt="Interview">
+                        </a>
+                        <a href="#" class="cancel-application" data-app-id="{{ app.id }}">
+                            <img src="{% static 'icons/cross.svg' %}" alt="Cancel">
+                        </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'hr_applicant_detail' app.id %}">
+                        <button>More</button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Модальное окно -->
+    <div id="interviewModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Schedule Interview</h3>
+            <form id="interviewForm">
+                <input type="hidden" name="app_id" id="app_id">
+                <label>Date: <input type="date" name="date" required></label><br>
+                <label>Time: <input type="time" name="time" required></label><br>
+                <label>Format:
+                    <select name="format">
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </label><br>
+                <label>Location/Link: <input type="text" name="location" required></label><br>
+                <label>Phone: <input type="tel" name="phone" required></label><br>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Открытие модалки
+        document.querySelectorAll('.open-interview-modal').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const appId = this.dataset.appId;
+                document.getElementById('app_id').value = appId;
+                document.getElementById('interviewModal').style.display = 'flex';
+            });
+        });
+
+        // Закрытие модалки
+        document.querySelector('.close').addEventListener('click', function () {
+            document.getElementById('interviewModal').style.display = 'none';
+        });
+
+        // Отправка формы интервью
+        document.getElementById('interviewForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+                app_id: document.getElementById('app_id').value,
+                date: this.date.value,
+                time: this.time.value,
+                format: this.format.value,
+                location: this.location.value,
+                phone: this.phone.value
+            };
+
+            fetch("{% url 'save_interview' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const row = document.querySelector(`[data-app-id="${formData.app_id}"]`).closest('tr');
+                    row.style.backgroundColor = 'lightyellow';
+
+                    const actionCell = row.querySelector('.actions-cell');
+                    actionCell.innerHTML = `
+                        <img src="{% static 'icons/accepted.svg' %}" alt="Interview Scheduled">
+                        <img src="{% static 'icons/cancel.svg' %}" alt="Reject">
+                    `;
+
+                    document.getElementById('interviewModal').style.display = 'none';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        });
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.querySelectorAll('.cancel-application').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const appId = this.dataset.appId;
+
+        if (confirm("Вы уверены, что хотите отказать студенту?")) {
+            fetch('/hr/reject-application/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ app_id: appId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert("Студенту отправлено уведомление об отказе.");
+
+                    const row = document.querySelector(`[data-app-id="${appId}"]`).closest('tr');
+                    row.style.backgroundColor = '#f8d7da';
+
+                    const actionsCell = row.querySelector('.actions-cell');
+                    actionsCell.innerHTML = `<img src="{% static 'icons/cross.svg' %}" alt="Rejected" title="Отказано">`;
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                alert('Произошла ошибка при отправке запроса.');
+            });
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
+

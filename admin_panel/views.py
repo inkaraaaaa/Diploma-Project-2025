@@ -16,6 +16,10 @@ from django.db.models import Count
 from vacancies.models import Application
 import csv
 from django.http import HttpResponse
+from plotly.offline import plot
+import plotly.express as px
+from django.db.models.functions import TruncMonth
+from django.utils.timezone import now
 
 def staff_required(function=None, login_url='/adminlogin/'):
     actual_decorator = user_passes_test(
@@ -33,7 +37,12 @@ def custom_logout(request):
 
 @staff_required
 def admin_panel(request):
-    return render(request, "admin.html")
+    context = {
+        'company_chart': top_companies_chart(),
+        'job_chart': top_jobs_by_applications(),
+        'trend_chart': job_posting_trend(),
+    }
+    return render(request, "admin.html", context)
 
 def custom_login(request):
     if request.method == 'POST':
@@ -278,6 +287,66 @@ def add_city(request):
     else:
         form = CityForm()
     return render(request, 'add_city.html', {'form': form})
+
+def top_companies_chart():
+    data = JobListing.objects.values('company__name').annotate(total=Count('id')).order_by('-total')[:5]
+    fig = px.bar(
+        x=[d['total'] for d in data],
+        y=[d['company__name'] for d in data],
+        orientation='h',
+        labels={'x': 'Vacancies', 'y': 'Company'},
+        title='Top-5 Companies Offering the Most Internships',
+        color_discrete_sequence=['#8a2be2'] 
+    )
+    fig.update_layout(width=800, height=500)
+    return plot(fig, output_type='div')
+
+
+def top_jobs_by_applications():
+    data = Application.objects.values('job__title').annotate(count=Count('id')).order_by('-count')[:5]
+    fig = px.bar(
+        x=[d['job__title'] for d in data],
+        y=[d['count'] for d in data],
+        labels={'x': 'Job Title', 'y': 'Applications'},
+        title='Top-5 Most Applied Internships',
+    )
+    fig.update_layout(
+        width=800,
+        height=500,
+        xaxis_tickangle=45,  # повернули надписи
+        xaxis_tickfont=dict(size=10)  # уменьшили шрифт
+    )
+    return plot(fig, output_type='div')
+
+
+
+
+
+def job_posting_trend():
+    data = (
+        JobListing.objects
+        .annotate(month=TruncMonth('created_at'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    fig = px.line(
+        x=[d['month'] for d in data],
+        y=[d['count'] for d in data],
+        labels={'x': 'Month', 'y': 'New Vacancies'},
+        title='Monthly Internship Posting Trends',
+    )
+    fig.update_layout(width=800, height=500)
+    return plot(fig, output_type='div')
+
+
+def stats_dashboard(request):
+    context = {
+        'company_chart': top_companies_chart(),
+        'job_chart': top_jobs_by_applications(),
+        'trend_chart': job_posting_trend(),
+    }
+    return render(request, 'dashboard.html', context)
 
 
 

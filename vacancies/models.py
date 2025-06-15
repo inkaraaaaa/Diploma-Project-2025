@@ -2,6 +2,7 @@ from django.db import models
 from sendreview.models import Company
 from users.models import UserProfile
 from django.utils import timezone
+from company.models import HRCompany
 
 class JobListing(models.Model):
     STATUS_CHOICES = [
@@ -19,6 +20,10 @@ class JobListing(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
     course = models.CharField(max_length=100, default='None')
+
+    hr_company = models.ForeignKey(HRCompany, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     about_role = models.TextField(blank=True, null=True)
     responsibilities = models.TextField(blank=True, null=True)
@@ -61,6 +66,9 @@ class Application(models.Model):
     student = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     job = models.ForeignKey(JobListing, on_delete=models.CASCADE)
     applied_at = models.DateTimeField(auto_now_add=True)
+    cover_letter = models.TextField(blank=True)
+    invited_to_interview = models.BooleanField(default=False)
+    rejected = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('student', 'job')

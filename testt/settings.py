@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'vacancies',
     'home_after',
     'admin_panel',
-    'userprofile'
-
+    'userprofile',
+    'company'
 ]
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 

@@ -24,13 +24,16 @@ urlpatterns = [
     path("", include("users.urls")),
     path("", include("unboarding_form.urls")),
     path('userprofile/', include('userprofile.urls')),
-    path('vacancies/', include('vacancies.urls')),
+    path("", include('vacancies.urls')),
     path("", include("admin_panel.urls")),
+    path("", include("company.urls")),
     path('', include('home_after.urls')),
     path('user/<str:username>/', views.profile_view, name='user_profile'),
     path('create-resume/', views.open_resume, name='create_resume'),
     path('update-about-me/', update_about_me, name='update_about_me'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
 

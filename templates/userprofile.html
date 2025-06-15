@@ -30,8 +30,26 @@
     <header>
         <h1 class="page-title">Account</h1>
         <div class="header-actions">
-            <button class="icon-button"><i class="fas fa-bell"></i></button>
-        </div>
+    <button id="notificationBtn" class="icon-button">
+        <i class="fas fa-bell"></i>
+        <span id="notification-count" class="badge bg-danger" style="display: none;">0</span>
+    </button>
+    <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+    <div class="notification-scroll">
+        <ul id="notificationList">
+            <!-- уведомления -->
+            <li>Notification 1</li>
+            <li>Notification 2</li>
+            <li>Notification 3</li>
+            <!-- добавь больше для проверки скролла -->
+        </ul>
+    </div>
+    <div class="dropdown-footer">
+        <a href="{% url 'student_applications' %}" class="view-all-button">View All</a>
+    </div>
+</div>
+
+</div>
     </header>
 
     <!-- Original dashboard section revised -->
@@ -186,115 +204,210 @@
     </div>
 </div>
 
-
 <script>
-    function toggleMenu() {
-        const menu = document.querySelector('.header-menu');
-        menu.classList.toggle('active');
-    }
-
-    function openPhotoModal() {
-        document.getElementById('photo-upload-modal').style.display = 'block';
-    }
-
-    function closePhotoModal() {
-        document.getElementById('photo-upload-modal').style.display = 'none';
-        document.getElementById('preview-container').style.display = 'none';
-        document.getElementById('photo-file-input').value = '';
-    }
-    function previewPhoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const preview = document.getElementById('preview-image');
-                preview.src = e.target.result;
-                document.getElementById('preview-container').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const trimmed = cookie.trim();
+            if (trimmed.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                break;
+            }
         }
     }
+    return cookieValue;
+}
 
-    function uploadPhoto() {
-        const fileInput = document.getElementById('photo-file-input');
-        const file = fileInput.files[0];
+function toggleMenu() {
+    const menu = document.querySelector('.header-menu');
+    menu.classList.toggle('active');
+}
 
-        if (!file) {
-            alert('Please select a photo first');
-            return;
+function openPhotoModal() {
+    document.getElementById('photo-upload-modal').style.display = 'block';
+}
+
+function closePhotoModal() {
+    document.getElementById('photo-upload-modal').style.display = 'none';
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('photo-file-input').value = '';
+}
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById('preview-image');
+            preview.src = e.target.result;
+            document.getElementById('preview-container').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function uploadPhoto() {
+    const fileInput = document.getElementById('photo-file-input');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Please select a photo first');
+        return;
+    }
+
+    if (!file.type.match('image.*')) {
+        alert('Please select an image file (JPEG, PNG, etc.)');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('photo', file);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+    const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    saveBtn.disabled = true;
+
+    fetch('{% url "upload_profile_photo" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
-
-        // Проверка типа файла
-        if (!file.type.match('image.*')) {
-            alert('Please select an image file (JPEG, PNG, etc.)');
-            return;
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const profilePhoto = document.querySelector('.profile-photo');
+            profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();
+            closePhotoModal();
+            alert('Profile photo updated successfully!');
+        } else {
+            throw new Error(data.message || 'Error uploading photo');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error uploading photo: ' + error.message);
+    })
+    .finally(() => {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
 
-        // Проверка размера файла (5MB максимум)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            return;
-        }
+function toggleAboutEdit() {
+    const display = document.querySelector('.about-me-display');
+    const form = document.querySelector('.about-me-form');
+    display.style.display = display.style.display === 'none' ? 'block' : 'none';
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
 
-        const formData = new FormData();
-        formData.append('photo', file);
+function toggleAccountEdit() {
+    const display = document.querySelector('.account-info-display');
+    const form = document.querySelector('.account-info-form');
+    display.style.display = display.style.display === 'none' ? 'block' : 'none';
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
 
-        // CSRF-токен
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        formData.append('csrfmiddlewaretoken', csrfToken);
+// ✅ Уведомления
 
-        // Индикатор загрузки
-        const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        saveBtn.disabled = true;
 
-        fetch('{% url "upload_profile_photo" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
-        })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        // Обновляем фото на странице
-                        const profilePhoto = document.querySelector('.profile-photo');
-                        profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();  // Добавляем timestamp для избежания кэширования
-                        closePhotoModal();
-                        alert('Profile photo updated successfully!');
-                    } else {
-                        throw new Error(data.message || 'Error uploading photo');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error uploading photo: ' + error.message);
-                })
-                .finally(() => {
-                    saveBtn.innerHTML = originalText;
-                    saveBtn.disabled = false;
+
+function fetchNotifications() {
+    fetch('/userprofile/get-notifications/')
+        .then(response => response.json())
+        .then(data => {
+            const list = document.getElementById('notificationList');
+            list.innerHTML = '';
+
+            data.forEach(notification => {
+                const li = document.createElement('li');
+                li.textContent = notification.message;
+                if (!notification.is_read) {
+                    li.style.fontWeight = 'bold';
+                }
+
+                li.addEventListener('click', () => {
+                    li.remove();
+                    markNotificationAsRead(notification.id);
                 });
-    }
-    function toggleAboutEdit() {
-        document.querySelector('.about-me-display').style.display =
-                document.querySelector('.about-me-display').style.display === 'none' ? 'block' : 'none';
 
-        document.querySelector('.about-me-form').style.display =
-                document.querySelector('.about-me-form').style.display === 'block' ? 'none' : 'block';
+                list.appendChild(li);
+            });
+        });
+}
+
+function markNotificationAsRead(notificationId) {
+    fetch('/userprofile/mark-notification-read/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ id: notificationId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateUnreadCount();  // <<< ОБЯЗАТЕЛЬНО
+        } else {
+            console.error('Ошибка:', data.status);
+        }
+    });
+}
+
+document.getElementById('notificationBtn').addEventListener('click', () => {
+    const dropdown = document.getElementById('notificationDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    fetchNotifications();
+});
+
+document.addEventListener('click', function (event) {
+    const dropdown = document.getElementById('notificationDropdown');
+    const btn = document.getElementById('notificationBtn');
+    if (!dropdown.contains(event.target) && !btn.contains(event.target)) {
+        dropdown.style.display = 'none';
     }
-    function toggleAccountEdit() {
-        const display = document.querySelector('.account-info-display');
-        const form = document.querySelector('.account-info-form');
-        display.style.display = display.style.display === 'none' ? 'block' : 'none';
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    }
+});
+
+function updateUnreadCount() {
+    fetch('/userprofile/unread-count/')
+        .then(response => response.json())
+        .then(data => {
+            const countSpan = document.getElementById('notification-count');
+            if (data.unread_count > 0) {
+                countSpan.textContent = data.unread_count;
+                countSpan.style.display = 'inline-block';
+            } else {
+                countSpan.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при получении количества уведомлений:', error);
+        });
+}
+
+// Автоматическое обновление
+updateUnreadCount();
+setInterval(updateUnreadCount, 60000);
+setInterval(updateNotificationCount, 30000);
+
 </script>
+
 </body>
 </html>

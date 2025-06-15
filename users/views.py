@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import SignUpForm, PasswordResetRequestForm
+from django.core.exceptions import ValidationError
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.conf import settings
@@ -28,26 +29,37 @@ from .forms import ContactForm
 from django.shortcuts import redirect, render
 from vacancies.models import JobListing
 from sendreview.models import Comment
-from users.models import UserProfile
+from users.models import UserProfile, Notification
 
 
 def signup(request):
+    print("Hello")
     if request.method == "POST":
         form = SignUpForm(request.POST)
 
+        print("Форма отправлена")  # DEBUG
+        print(form.errors)         # DEBUG
+
         if form.is_valid():
             email = form.cleaned_data.get("email")
-            send_verification_code(request, email)  # Отправка кода
-
-            # Сохраняем введенные данные в сессии
+            send_verification_code(request, email)
             request.session["signup_data"] = request.POST
-
-            return redirect("verify")  # Перенаправляем на страницу ввода кода
+            return redirect("verify")
 
     else:
         form = SignUpForm()
 
     return render(request, "signup.html", {"form": form})
+
+def clean_email(self):
+    email = self.cleaned_data.get("email")
+    allowed_domains = ["stu.sdu.edu.kz", "sdu.edu.kz"]
+
+    if not any(email.endswith(f"@{domain}") for domain in allowed_domains):
+        raise ValidationError("You must use your university email.")
+    
+    return email
+
 
 def verify_code(request):
     email = request.session.get("verification_email")
@@ -212,10 +224,9 @@ def contact_view(request):
 def contact_success_view(request):
     return render(request, 'successent.html')
 
-
-
 def home_before_login(request):
     comments = Comment.objects.all()
     return render(request, 'home-be.html', {'comments': comments})
 
-
+def custom_404_view(request, exception):
+    return render(request, "404.html", status=404)

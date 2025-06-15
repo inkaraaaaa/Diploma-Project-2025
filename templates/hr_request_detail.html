@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGO</title>
+</head>
+<body>
+<h2>{{ request_obj.company_name }} — Full Info</h2>
+<p><strong>HR:</strong> {{ request_obj.hr_name }} ({{ request_obj.hr_email }})</p>
+<p><strong>Employee Count:</strong> {{ request_obj.employee_count }}</p>
+<p><strong>City:</strong> {{ request_obj.city.name }}</p>
+<p><strong>Overview:</strong> {{ request_obj.overview }}</p>
+<p><strong>Partnership:</strong> {{ request_obj.partnership }}</p>
+
+{% if request_obj.logo %}
+    <img src="{{ request_obj.logo.url }}" width="100">
+{% endif %}
+</body>
+</html>

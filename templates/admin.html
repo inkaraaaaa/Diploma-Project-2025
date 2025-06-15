@@ -8,11 +8,9 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
 	<link rel="stylesheet" href="/static/css/admin.css">
-
 	<title>InternGO</title>
 </head>
 <body>
-
 
 	<!-- SIDEBAR -->
 	<section id="sidebar">
@@ -143,87 +141,19 @@
 
 
 			<div class="table-data">
-				<!--<div class="order">
-					<div class="head">
-						<h3>Recent Applications</h3>
-						<i class='bx bx-search' ></i>
-						<i class='bx bx-filter' ></i>
-					</div>
-					<table>
-						<thead>
-							<tr>
-								<th>User</th>
-								<th>Date Applications</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									<img src="/static/images/people.png">
-									<p>Jenny Kim</p>
-								</td>
-								<td>05-05-2025</td>
-								<td><span class="status accepted">Accepted</span></td>
-							</tr>
-							<tr>
-								<td>
-									<img src="/static/images/people.png">
-									<p>Mei Lee</p>
-								</td>
-								<td>01-05-2025</td>
-								<td><span class="status pending">Under review</span></td>
-							</tr>
-							<tr>
-								<td>
-									<img src="/static/images/people.png">
-									<p>Lisa Manoban</p>
-								</td>
-								<td>12-04-2025</td>
-								<td><span class="status process">Process</span></td>
-							</tr>
-							<tr>
-								<td>
-									<img src="/static/images/people.png">
-									<p>John Doe</p>
-								</td>
-								<td>01-04-2025</td>
-								<td><span class="status pending">Under review</span></td>
-							</tr>
-							<tr>
-								<td>
-									<img src="/static/images/people.png">
-									<p>Daniel Doe</p>
-								</td>
-								<td>29-03-2025</td>
-								<td><span class="status accepted">Accepted</span></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>-->
-				<!--<div class="todo">
-					<div class="head">
-						<h3>Internship Listings</h3>
-						<i class='bx bx-plus' onclick="window.location.href='/create-job/'"></i>
-						<i class='bx bx-filter' onclick="filterMenu.classList.toggle('active')"></i>
-					</div>
-					<ul class="todo-list">
-						{% for job in jobs %}
-						<li class="{{ job.status }}">
-							<p>{{ job.title }}</p>
-							<div class="dropdown" style="position: relative;">
-								<i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
-								<div class="dropdown-menu">
-									<a href="#" class="change-status" data-id="{{ job.id }}" data-status="open">Open</a>
-									<a href="#" class="change-status" data-id="{{ job.id }}" data-status="pending">Pending</a>
-									<a href="#" class="change-status" data-id="{{ job.id }}" data-status="closed">Closed</a>
-									<a href="#" class="change-status" data-id="{{ job.id }}" data-status="expired">Expired</a>
-								</div>
-							</div>
-						</li>
-						{% endfor %}
-					</ul>
-				</div>-->
+				<div class="chart-container" style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                    <div class="chart-box" style="flex: 1 1 45%; min-width: 400px;">
+                        {{ company_chart|safe }}
+                    </div>
+
+                    <div class="chart-box" style="flex: 1 1 100%; min-width: 400px;">
+                        {{ trend_chart|safe }}
+                    </div>
+
+                    <div class="chart-box" style="flex: 1 1 45%; min-width: 800px;">
+                        {{ job_chart|safe }}
+                    </div>
+                </div>
 			</div>
 		</main>
 		<!-- MAIN -->
@@ -364,8 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 });
-
-
 	</script>		
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </body>
 </html>

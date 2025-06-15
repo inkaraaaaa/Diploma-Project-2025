@@ -204,7 +204,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Cache DOM elements
+
         const tabs = document.querySelectorAll('.tab');
         const addEducationBtn = document.getElementById('add-education');
         const updatePreviewBtn = document.getElementById('update-preview');
@@ -212,15 +212,12 @@
         const nextStepBtn = document.getElementById('next-step');
         const successNotification = document.getElementById('success-notification');
         const educationFields = document.getElementById('education-fields');
-        const resumeForm = document.getElementById('resume-form');
         const previewElement = document.getElementById('resume-preview');
 
-        // Tab switching functionality
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
                 const tabId = this.getAttribute('data-tab');
 
-                // Remove active class from all tabs and content
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
@@ -291,9 +288,8 @@
             }, 3000);
         }
 
-        // Resume updater function
         function updateResume() {
-            // Update personal info
+
             const summary = document.getElementById('summary').value || 'Creative designer with a passion for intuitive user experiences. Skilled in digital product design with a focus on user-centered design principles and innovative solutions.';
 
 
@@ -360,10 +356,7 @@
             });
         }
 
-        // Print functionality
-        // Замените текущий обработчик для printBtn на этот:
-        printBtn.addEventListener('click', function() {
-            // Настройки для PDF
+        const printResume = function () {
             const element = document.getElementById('resume-preview');
             const opt = {
                 margin: 10,
@@ -373,21 +366,17 @@
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Показываем уведомление о начале генерации PDF
             const generatingNotification = document.createElement('div');
             generatingNotification.className = 'generating-pdf-notification';
             generatingNotification.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
             document.body.appendChild(generatingNotification);
 
-            // Генерируем PDF
-            html2pdf().from(element).set(opt).save().then(() => {
-                // Удаляем уведомление после завершения
+            return html2pdf().from(element).set(opt).save().then(() => {
                 generatingNotification.remove();
             });
-        });
+        };
 
-        // Next step functionality
-        // Next step functionality
+        printBtn.addEventListener('click', printResume);
 
         nextStepBtn.addEventListener('click', function() {
             const activeTab = document.querySelector('.tab.active');
@@ -411,7 +400,7 @@
 
                 if (currentIndex + 1 === tabs.length - 1) {
                     this.innerHTML = 'Save and Exit <i class="fas fa-check"></i>';
-                    this.id = 'save-exit'; // Меняем ID для последующей обработки
+                    this.id = 'save-exit';
                 }
             } else {
 
@@ -419,45 +408,20 @@
             }
         });
 
-
         function saveResumeAndExit() {
-            const element = document.getElementById('resume-preview');
-
-            // Показать загрузку
-            const loader = document.createElement('div');
-            loader.className = 'loader';
-            loader.innerText = 'Сохраняем резюме...';
-            document.body.appendChild(loader);
-
-            const opt = {
-                margin:       0.5,
-                filename:     'resume.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Удалить загрузку после сохранения
-                document.body.removeChild(loader);
-                alert('Резюме успешно сохранено!');
-
-                // Перенаправление на профиль пользователя
-                window.location.href = '/user/{{ user.username }}/';  // Используем шаблонную переменную user.username
-            }).catch(error => {
-                document.body.removeChild(loader);
-                alert('Произошла ошибка при сохранении PDF: ' + error.message);
+            printResume().then(() => {
+                window.location.href = '/user/{{ user.username }}/';
+            }).catch((error) => {
+                alert('Ошибка при сохранении PDF: ' + error.message);
             });
         }
-
-
 
 
 
         const saveStyles = document.createElement('style');
         document.head.appendChild(saveStyles);
 
-        // Update step indicator
+
         function updateStepIndicator(step) {
             const steps = document.querySelectorAll('.step');
 
@@ -477,7 +441,6 @@
                 }
             });
 
-            // Update step connectors
             const connectors = document.querySelectorAll('.step-connector');
             connectors.forEach((connector, index) => {
                 if (index + 1 < step) {
@@ -488,7 +451,6 @@
             });
         }
 
-        // Auto-update skills as tags
         const skillsTextarea = document.getElementById('skills');
         skillsTextarea.addEventListener('input', function() {
             const skillsValue = this.value;
@@ -506,7 +468,6 @@
             }
         });
 
-        // Real-time preview update for key fields
         const keyInputs = document.querySelectorAll('#fullName, #position, #email, #phone, #location, #summary');
         keyInputs.forEach(input => {
             input.addEventListener('input', function() {
@@ -617,19 +578,18 @@
             }
         });
 
-        // Add language proficiency visualizer
         const languagesTextarea = document.getElementById('languages');
         languagesTextarea.addEventListener('input', function() {
             const languagesSection = previewElement.querySelector('.preview-section:nth-child(5)');
             const languagesText = this.value;
 
             if (languagesText) {
-                // Basic parsing of language entries
+
                 const languages = languagesText.split(',').map(lang => lang.trim());
                 let languagesHTML = '';
 
                 languages.forEach(lang => {
-                    // Try to extract language and proficiency
+
                     const parts = lang.split('(');
                     if (parts.length > 1) {
                         const language = parts[0].trim();
@@ -652,7 +612,7 @@
                     }
                 });
 
-                // Apply styles for language proficiency visualization
+
                 const styleElement = document.createElement('style');
                 document.head.appendChild(styleElement);
 

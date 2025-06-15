@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '5=pi3$)$aip_04w286vi$=1b#$ffki
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,34.32.87.142').split(',')
 
 
 # Application definition
@@ -86,12 +86,12 @@ WSGI_APPLICATION = 'testt.wsgi.application'
 # Get database settings from environment or use default values
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'intern_go',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST':'127.0.0.1',
-        'PORT':'5433',
+        'USER': 'postgres',
+        'PASSWORD': 'Weryfly02',
+        'HOST': '127.0.0.1',
+        'PORT': '5433',
     }
 }
 

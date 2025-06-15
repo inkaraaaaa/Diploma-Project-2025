@@ -18,7 +18,6 @@ class Skill(models.Model):
         return self.name
 
 class UserProfile(AbstractUser):
-    
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
@@ -33,6 +32,10 @@ class UserProfile(AbstractUser):
     languages = models.ManyToManyField(Language, blank=True)
     skills = models.ManyToManyField(Skill, blank=True)
     is_hr = models.BooleanField(default=False)
+    linkedin = models.URLField(blank=True, null=True)
+    twitter = models.URLField(blank=True, null=True)
+    facebook = models.URLField(blank=True, null=True)
+    instagram = models.URLField(blank=True, null=True)
 
     user_permissions = models.ManyToManyField(
         "auth.Permission",

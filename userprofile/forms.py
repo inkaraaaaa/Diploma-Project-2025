@@ -1,6 +1,7 @@
 from django import forms
 from users.models import UserProfile, Language, Skill
-from .models import Document  # Подключаем модель отсюда, не определяем заново
+from .models import Document
+
 
 class UserProfileForm(forms.ModelForm):
     languages_input = forms.CharField(
@@ -52,3 +53,10 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['title', 'upload']
+
+
+
+class SocialLinksForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['facebook', 'instagram', 'linkedin', 'twitter']

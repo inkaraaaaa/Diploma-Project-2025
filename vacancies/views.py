@@ -16,6 +16,9 @@ from django.utils import timezone
 
 from django.utils import timezone
 
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='signin')
 def job_list(request):
     title = request.GET.get('title', '')
     job_type = request.GET.get('job_type', '')
@@ -51,7 +54,7 @@ def job_list(request):
     })
 
 # views.py
-
+@login_required(login_url='signin')
 def job_list_view(request):
     job_types = request.GET.getlist('type')
     if job_types:

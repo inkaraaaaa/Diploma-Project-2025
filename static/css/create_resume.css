@@ -225,7 +225,7 @@ textarea {
 }
 
 .step.completed {
-    background-color: var(--success);
+    background-color: #25c919;
 }
 
 .step.inactive {
@@ -422,7 +422,7 @@ button:hover {
 }
 
 .print-button {
-    background-color: var(--accent);
+    background-color: var(--active-color);
 }
 
 .print-button:hover {
@@ -448,27 +448,55 @@ button:hover {
 @keyframes slideIn {
     from { transform: translateX(100%); }
     to { transform: translateX(0); }
-}
 
-@media print {
+}@media print {
     body * {
         visibility: hidden;
     }
-    #resume-preview, #resume-preview * {
-        visibility: visible;
-    }
+
     #resume-preview {
+        width: 794px;
+        max-width: 794px;
+        margin: auto;
+    }
+
+
+
+
+    #resume-preview {
+        visibility: visible;
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
         box-shadow: none;
         padding: 0;
+
+
     }
+    .page-break {
+        page-break-before: always;
+        break-before: page;
+    }
+
+
+    #resume-preview * {
+        visibility: visible;
+    }
+
+    .resume-section {
+        page-break-inside: avoid; /* для важных секций */
+    }
+
     .no-print {
         display: none !important;
     }
+
+    .no-break {
+        page-break-inside: avoid;
+    }
 }
+
 
 .download-button {
     background-color: var(--tertiary);

@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Your Resume</title>
-    <!-- Подключение иконок Font Awesome для иконки загрузки -->
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <!-- Можно добавить свой CSS файл здесь -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,7 +52,6 @@
         </form>
     </div>
 
-    <!-- Уведомление об успешной загрузке (если есть) -->
     {% if success_message %}
     <div class="alert alert-success" style="background-color: #28a745; color: white; padding: 10px; margin-top: 20px;">
         {{ success_message }}

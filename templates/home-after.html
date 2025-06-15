@@ -245,27 +245,8 @@
         const menu = document.querySelector('.header-menu');
         menu.classList.toggle('active');
     }
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".vacancy-card").forEach(card => {
-            let companyId = card.getAttribute("data-company-id"); // Получаем ID компании
-            let companyNameElement = card.querySelector(".company"); // Элемент с названием
 
-            // Загрузка названия компании
-            fetch(`/company/${companyId}/`, {
-                headers: { "X-Requested-With": "XMLHttpRequest" }
-            })
-                    .then(response => response.json())
-                    .then(data => {
-                        companyNameElement.textContent = data.name; // Обновляем название
-                    })
-                    .catch(error => console.error("Ошибка загрузки компании:", error));
 
-            // Добавляем событие клика для редиректа
-            card.addEventListener("click", function() {
-                window.location.href = `/company/${companyId}/`;  // Перенаправляем на страницу компании
-            });
-        });
-    });
 
     document.addEventListener('DOMContentLoaded', function() {
         const testimonials = document.querySelectorAll('.testimonial-content');
@@ -296,7 +277,6 @@
                 }
             });
         }
-
         // Add click event to the dots
         dots.forEach(dot => {
             dot.addEventListener('click', function() {
@@ -306,7 +286,6 @@
             });
         });
 
-        // Add click event to previous button
         if (prevBtn) {
             prevBtn.addEventListener('click', function() {
                 currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
@@ -314,7 +293,6 @@
             });
         }
 
-        // Add click event to next button
         if (nextBtn) {
             nextBtn.addEventListener('click', function() {
                 currentIndex = (currentIndex + 1) % testimonials.length;
@@ -322,10 +300,8 @@
             });
         }
 
-        // Initialize - show the first testimonial
-        showTestimonial(0);
 
-        // Optional: Auto-rotate testimonials
+        showTestimonial(0);
 
         setInterval(function() {
             currentIndex = (currentIndex + 1) % testimonials.length;

@@ -24,8 +24,10 @@
             {% else %}
                 <a href="{% url 'home-be' %}">Home</a>
             {% endif %}
+
             <a href="{% url 'vacancies' %}">Vacancies</a>
-            <a href="{% url 'faq' %}"class="active">FAQ</a>
+            <a href="{% url 'faq' %}" class="active">FAQ</a>
+
             {% if user.is_authenticated %}
                 <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
                     {% csrf_token %}
@@ -37,8 +39,14 @@
                         <i class="fas fa-user"></i>
                     </a>
                 {% endif %}
+            {% else %}
+                <a href="{% url 'signin' %}">Login</a>
+                <a href="{% url 'signup' %}">
+                    SignUp
+                </a>
             {% endif %}
         </div>
+
     </div>
 
     <section class="module-slider">
@@ -160,7 +168,7 @@
                         <div class="contact-block">
                             <h3>Chat with us</h3>
                             <p>Speak to our friendly team via live chat.</p>
-                            <a href="#">Telegram</a>
+                            <a href="https://t.me/anuarovnam" target="_blank">@anuarovnam</a>
                         </div>
                         <div class="contact-block">
                             <h3>Call us</h3>

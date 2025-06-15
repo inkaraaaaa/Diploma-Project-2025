@@ -137,7 +137,7 @@
         <div class="preview-section">
             <div class="form-title">Resume Preview</div>
             <button type="button" class="action-button print-button no-print">
-                <i class="fas fa-print"></i> Print
+                <i class="fas fa-print"></i> Download
             </button>
 
             <div id="resume-preview">
@@ -399,7 +399,7 @@
 
 
                 if (currentIndex + 1 === tabs.length - 1) {
-                    this.innerHTML = 'Save and Exit <i class="fas fa-check"></i>';
+                    this.innerHTML = 'Back to Profile <i class="fas fa-check"></i>';
                     this.id = 'save-exit';
                 }
             } else {
@@ -409,12 +409,9 @@
         });
 
         function saveResumeAndExit() {
-            printResume().then(() => {
-                window.location.href = '/user/{{ user.username }}/';
-            }).catch((error) => {
-                alert('Ошибка при сохранении PDF: ' + error.message);
-            });
+            window.location.href = '/user/{{ user.username }}/';
         }
+
 
 
 

@@ -125,7 +125,7 @@ body {
 
 .container {
     margin: 0 auto;
-    padding: 60px;
+    padding: 30px 40px; /* Уменьшил с 60px до 30px сверху/снизу */
     background-color: var(--surface-container-lowest);
     min-height: calc(100vh - 60px);
 }
@@ -134,8 +134,9 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px; /* Уменьшил с 40px до 30px */
     border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 20px; /* Добавил отступ снизу для лучшего вида */
 }
 
 .page-title {
@@ -429,15 +430,15 @@ header {
     }
 
     .container {
-        padding: 20px;
+        padding: 20px; /* Для мобильных устройств тоже уменьшил padding */
     }
 }
 
- .profile-photo-container {
-     position: relative;
-     display: inline-block;
-     margin-bottom: 15px;
- }
+.profile-photo-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
 
 .profile-photo {
     object-fit: cover;
@@ -686,14 +687,14 @@ header {
 }
 
 .button.danger {
-     background-color: #e74c3c;
-     color: white;
-     border: none;
-     padding: 10px 16px;
-     border-radius: 8px;
-     cursor: pointer;
-     transition: 0.3s ease;
- }
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
 .button.danger:hover {
     background-color: #c0392b;
 }

@@ -12,7 +12,7 @@ from .models import Document
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib import messages
-<<<<<<< HEAD
+
 from users.models import Notification, UserProfile
 import logging
 from django.utils import timezone
@@ -23,7 +23,6 @@ from django.views.decorators.http import require_POST
 from vacancies.models import Application
 from django.db.models import Prefetch
 from company.models import Interview
-=======
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -31,8 +30,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import SocialLinksForm
 
-
->>>>>>> 17163775b05d13601d987d532779ccc6f14da78e
 
 
 @csrf_exempt
@@ -48,12 +45,8 @@ def upload_profile_photo(request):
         })
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
-<<<<<<< HEAD
+
 @login_required
-=======
-
-
->>>>>>> 17163775b05d13601d987d532779ccc6f14da78e
 def profile_view(request, username):
     # Получаем пользователя по username или 404
     user = get_object_or_404(User, username=username)
@@ -95,24 +88,27 @@ def profile_view(request, username):
         'documents': documents,
     })
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 17163775b05d13601d987d532779ccc6f14da78e
+
 @login_required
 def update_about_me(request):
     if request.method == 'POST':
         user = request.user
+
         user.position = request.POST.get('position')
-        user.university_course = request.POST.get('university_course')
+        course_value = request.POST.get('university_course')
         user.city = request.POST.get('city')
         user.email = request.POST.get('email')
         user.phone_number = request.POST.get('phone_number')
+
+        # Проверка: если значение есть и оно число — сохраняем, иначе ставим None
+        if course_value and course_value.isdigit():
+            user.university_course = int(course_value)
+        else:
+            user.university_course = None  # Убедись, что в модели стоит null=True, blank=True
+
         user.save()
-        return redirect('user_profile', username=request.user.username)
-
-
-
+        return redirect('user_profile', username=user.username)
 @login_required
 def edit_profile(request):
     user = request.user
@@ -223,12 +219,7 @@ def student_applications_view(request):
         Prefetch('interview_set', queryset=Interview.objects.all())
     )
     return render(request, 'student_applications.html', {'applications': applications})
-
-
-
-
-
-        response['Content-Disposition'] = f'inline; filename={document.title}.pdf'
+    response['Content-Disposition'] = f'inline; filename={document.title}.pdf'
     return response
 
 

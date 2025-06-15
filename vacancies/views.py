@@ -65,3 +65,6 @@ def apply_job(request, job_id):
         messages.success(request, 'Application submitted successfully.')
 
     return redirect('job_detail', job_id=job.id)
+
+def success_view(request):
+    return render(request, 'successent.html')

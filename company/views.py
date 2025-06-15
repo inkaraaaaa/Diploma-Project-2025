@@ -28,6 +28,7 @@ from datetime import datetime
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import user_passes_test
 
+
 def hr_required(function=None, login_url='/hr/register/'):
     actual_decorator = user_passes_test(
         lambda u: u.is_authenticated and getattr(u, 'is_hr', False),

@@ -32,6 +32,7 @@ from .forms import SocialLinksForm
 
 
 
+
 @csrf_exempt
 def upload_profile_photo(request):
     if request.method == 'POST' and request.FILES.get('photo'):
@@ -130,6 +131,7 @@ def upload_document(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             document = form.save(commit=False)
+            print("Document before save:", document, document.upload, request.user)
             document.user = request.user
             document.save()
             messages.success(request, 'Document successfully uploaded!')
@@ -138,6 +140,7 @@ def upload_document(request):
         form = DocumentForm()
 
     return render(request, 'upload-document.html', {'form': form})
+
 
 
 
@@ -221,6 +224,10 @@ def student_applications_view(request):
     return render(request, 'student_applications.html', {'applications': applications})
     response['Content-Disposition'] = f'inline; filename={document.title}.pdf'
     return response
+
+
+    #response['Content-Disposition'] = f'inline; filename={document.title}.pdf'
+    #return response
 
 
 @login_required

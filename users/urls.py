@@ -23,7 +23,7 @@ urlpatterns = [
     path("success_signup/", success_signup, name="success-signup"),
     path("signin/", auth_views.LoginView.as_view(template_name="signin.html"), name="signin"),
     path("success-signin/", success_signin, name="success_signin"),
-    path('logout/', LogoutView.as_view(next_page='main_page'), name='logout'),
+    #path('logout/', LogoutView.as_view(next_page='main_page'), name='logout'),
     path('', main_page, name="main_page"),
     path('faq/', contact_view, name="faq"),
     path('contact-success/', contact_success_view, name='contact_success'),

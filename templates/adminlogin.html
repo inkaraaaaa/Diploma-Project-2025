@@ -1,116 +1,126 @@
-<!-- templates/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to Admin Panel</title>
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
-       /* Стили для всей страницы */
- body {
-     font-family: "Poppins", sans-serif;;
-     background-color: #FBFBFB;
-     margin: 40px;
-     padding: 0;
-     color: #333;
- }
- 
- /* Заголовок */
- h1 {
-     color: #2c3e50;
- }
- 
- /* Стили формы */
- form {
-     background-color: #fff;
-     padding: 20px 30px;
-     border-radius: 8px;
-     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-     max-width: 500px;
- }
- 
- /* Поля формы */
- form p {
-     margin-bottom: 15px;
- }
- 
- label {
-     display: block;
-     margin-bottom: 5px;
-     font-weight: bold;
- }
- 
- input[type="text"],
- input[type="file"],
- select,
- textarea {
-     width: 100%;
-     padding: 8px;
-     border: 1px solid #ccc;
-     border-radius: 4px;
-     box-sizing: border-box;
- }
- 
- /* Кнопки */
- button[type="submit"] {
-     background-color: #8a2be2;
-     color: white;
-     border: none;
-     padding: 10px 18px;
-     border-radius: 4px;
-     cursor: pointer;
- }
- 
- button[type="submit"]:hover {
-     background-color: #3d0e69
- }
- 
- a {
-     margin-left: 10px;
-     text-decoration: none;
-     color: #7f8c8d;
- }
- 
- a:hover {
-     color: #34495e;
- }
- 
- /* Ошибки формы */
- .form-errors {
-     margin-top: 20px;
-     padding: 10px;
-     background-color: #ffe6e6;
-     border: 1px solid #ff4d4d;
-     color: #cc0000;
-     border-radius: 5px;
- }
- 
- .form-errors li {
-     margin-left: 20px;
-     list-style-type: disc;
- }
- 
-     </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login to Admin Panel</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    form div {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #8a2be2;
+      outline: none;
+    }
+
+    button[type="submit"] {
+      background-color: #8a2be2;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #3d0e69;
+    }
+
+    .form-errors {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #ffe6e6;
+      border: 1px solid #ff4d4d;
+      color: #cc0000;
+      border-radius: 5px;
+    }
+
+    .form-errors li {
+      margin-left: 20px;
+      list-style-type: disc;
+    }
+
+    .error-text {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
+  <div class="login-container">
     <h2>Login to Admin Panel</h2>
     <form method="post">
-        {% csrf_token %}
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <button type="submit">Login</button>
-        </div>
+      {% csrf_token %}
+      <div>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div>
+        <button type="submit">Login</button>
+      </div>
     </form>
     {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
+      <div class="error-text">{{ error_message }}</div>
     {% endif %}
+  </div>
 </body>
 </html>

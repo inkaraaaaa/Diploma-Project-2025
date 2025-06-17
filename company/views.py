@@ -27,6 +27,8 @@ from django.http import JsonResponse
 from datetime import datetime
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import user_passes_test
+from django import forms
+from admin_panel.forms import CompanyForm
 
 
 def hr_required(function=None, login_url='/hr/register/'):
@@ -76,7 +78,7 @@ def hr_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None and hasattr(user, 'hrcompany'):
             login(request, user)
-            return redirect('hr_dashboard')  # имя URL'а на панель HR
+            return redirect('hr_vacancies')  # имя URL'а на панель HR
         else:
             messages.error(request, 'Неверные данные или вы не HR.')
 
@@ -196,20 +198,7 @@ def hr_dashboard(request):
 
 
 
-@hr_required
-def add_internship(request):
-    if request.method == 'POST':
-        form = InternshipForm(request.POST)
-        if form.is_valid():
-            internship = form.save(commit=False)
-            internship.company = request.user.hrcompany.company  # 👈 связываем с компанией
-            internship.hr_company = request.user.hrcompany       # 👈 связываем с HRCompany
-            internship.status = 'pending'
-            internship.save()
-            return redirect('hr_internship_list')
-    else:
-        form = InternshipForm()
-    return render(request, 'hr_add_internship.html', {'form': form})
+
 
 
 
@@ -236,11 +225,12 @@ def application_detail(request, pk):
 @hr_required
 def download_cv(request, user_id):
     user = get_object_or_404(UserProfile, id=user_id)
+
     if not user.cv:
         raise Http404("CV not found")
 
     response = HttpResponse(user.cv, content_type='application/pdf')
-    filename = f"{user.first_name}_{user.last_name}.pdf"
+    filename = f"{user.first_name}_{user.last_name}_CV.pdf"
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
@@ -293,60 +283,178 @@ def save_interview(request):
             return JsonResponse({'status': 'error', 'message': 'Application not found'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-@hr_required
-@csrf_exempt
+@login_required
 @require_POST
 def reject_application(request):
     data = json.loads(request.body)
     app_id = data.get('app_id')
+
     try:
-        application = Application.objects.get(id=app_id)
+        # Используем правильное имя поля: 'job' вместо 'internship'
+        application = Application.objects.select_related('job__hr_company').get(id=app_id)
+
+        # Проверка, принадлежит ли вакансия текущему HR
+        if application.job.hr_company.user != request.user:
+            return JsonResponse({'status': 'error', 'message': 'Permission denied.'}, status=403)
+
         application.rejected = True
         application.save()
 
-        # Создаём уведомление студенту
+        # Уведомление студенту
         Notification.objects.create(
-            recipient=application.student,  # или application.user, в зависимости от модели
-            message = f"Thank you for your interest in the position '{application.job.title}' at '{application.job.company.name}'. Unfortunately, your application was not successful this time."
+            recipient=application.student,
+            message=f"Thank you for your interest in the position '{application.job.title}' at '{application.job.hr_company.name}'. Unfortunately, your application was not successful this time."
         )
 
         return JsonResponse({'status': 'success'})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-    
-@hr_required
-def internship_list(request):
-    company = request.user.hrcompany.company
-    hr_company = request.user.hrcompany
-    internships = JobListing.objects.filter(company=company)
 
+    except Application.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Application not found.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+def hr_vacancies_view(request):
+    hr_company = get_object_or_404(HRCompany, user=request.user)
+    internships = JobListing.objects.filter(hr_company=hr_company).order_by('-created_at')
+    form = InternshipForm()
+    
+    # Форма для каждого объекта
+    edit_forms = {intern.id: InternshipForm(instance=intern) for intern in internships}
+
+    return render(request, 'hr_vacancies.html', {
+        'internships': internships,
+        'form': form,
+        'edit_forms': edit_forms
+    })
+    
+@login_required
+def hr_add_internship(request):
     if request.method == 'POST':
         form = InternshipForm(request.POST)
         if form.is_valid():
             internship = form.save(commit=False)
-            internship.company = company
-            internship.hr_company = hr_company
-            internship.status = 'pending'
+            internship.hr_company = HRCompany.objects.get(user=request.user)
+            internship.company = internship.hr_company.company  # привязка к company
             internship.save()
-            return redirect('hr_internship_list')
-    else:
-        form = InternshipForm()
+    return redirect('hr_vacancies')
 
-    edit_forms = {internship.id: InternshipForm(instance=internship) for internship in internships}
 
-    return render(request, 'hr_vacancies.html', {
-        'internships': internships,
-        'form': form,                      # для модального "Add"
-        'edit_forms': edit_forms           # для модальных "Edit"
-    })
-
-@hr_required
-def edit_internship(request, pk):
-    company = request.user.hrcompany.company
-    internship = get_object_or_404(JobListing, id=pk, company=company)
+@login_required
+def hr_edit_internship(request, internship_id):
+    internship = get_object_or_404(JobListing, id=internship_id, hr_company__user=request.user)
 
     if request.method == 'POST':
         form = InternshipForm(request.POST, instance=internship)
         if form.is_valid():
             form.save()
-            return redirect('hr_internship_list')
+    return redirect('hr_vacancies')
+
+
+@login_required
+def hr_delete_internship(request, internship_id):
+    internship = get_object_or_404(JobListing, id=internship_id, hr_company__user=request.user)
+    internship.delete()
+    return redirect('hr_vacancies')
+
+def application_detail(request, pk):
+    internship = get_object_or_404(JobListing, pk=pk)
+    applications = Application.objects.filter(job=internship).select_related('student')
+
+    context = {
+        'internship': internship,
+        'applications': applications,
+    }
+    return render(request, 'hr_vacancy_detail.html', context)
+
+@require_POST
+def accept_application(request):
+    import json
+    data = json.loads(request.body)
+
+    app_id = data.get('app_id')
+    comment = data.get('comment')
+
+    try:
+        application = Application.objects.get(id=app_id)
+        application.accepted = True
+        application.rejected = False
+        application.save()
+
+        # Создать уведомление студенту
+        Notification.objects.create(
+            recipient=application.student,
+            message=f"🎉 Congratulations! You have been accepted to the interview. HR comment: {comment}"
+        )
+
+        return JsonResponse({'status': 'success'})
+    except Application.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Application not found'})
+    
+@login_required
+def hr_profile_view(request):
+    hr_company = get_object_or_404(HRCompany, user=request.user)
+    company = hr_company.company
+    form = CompanyForm(instance=company)
+
+    return render(request, 'hr_profile.html', {
+    'hr_company': hr_company,
+    'hr_user': request.user,
+    'company': company,
+    'form': form,
+})
+
+
+
+from django.views.decorators.http import require_POST
+
+from django.http import HttpResponseNotAllowed
+
+@login_required
+def edit_company(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    hr_company = get_object_or_404(HRCompany, user=request.user)
+    company = hr_company.company
+
+    form = CompanyForm(request.POST, request.FILES, instance=company)
+    if form.is_valid():
+        form.save()
+        return HttpResponse("OK")
+    return HttpResponse("Form invalid", status=400)
+
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.http import JsonResponse
+
+@login_required
+def hr_change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # чтобы не разлогинило
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'error': form.errors.as_text()})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+from django.contrib.auth import logout
+
+def custom_logout(request):
+    logout(request)
+    return redirect('hr/login/')
+
+from vacancies.models import JobListing
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def delete_internship(request, pk):
+    internship = get_object_or_404(JobListing, id=pk, company=request.user.hrcompany.company)
+
+    if request.method == 'POST':
+        internship.delete()
+        return redirect('hr_vacancies')  # замени на свою главную страницу
+
+    # если метод GET — вернём ошибку (или можно сделать модалку подтверждения)
+    return redirect('hr_vacancies')

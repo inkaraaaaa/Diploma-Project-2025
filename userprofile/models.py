@@ -5,8 +5,9 @@ from django.conf import settings
 
 User = get_user_model()
 
+
 class Document(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     upload = models.FileField(upload_to='documents/')
 
@@ -14,3 +15,4 @@ class Document(models.Model):
         if self.upload and os.path.isfile(self.upload.path):
             os.remove(self.upload.path)
         super().delete(*args, **kwargs)
+

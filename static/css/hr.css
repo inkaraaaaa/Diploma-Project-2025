@@ -273,3 +273,17 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
+.form-footer {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+.form-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+.form-footer a:hover {
+    text-decoration: underline;
+}
+

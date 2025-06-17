@@ -62,6 +62,18 @@ class JobListing(models.Model):
 
         super().save(*args, **kwargs)
     
+    @property
+    def requirements_list(self):
+        if self.requirements:
+            return [req.strip() for req in self.requirements.strip().split('\n') if req.strip()]
+        return []
+
+    @property
+    def conditions_list(self):
+        if self.responsibilities:
+            return [cond.strip() for cond in self.responsibilities.strip().split('\n') if cond.strip()]
+        return []
+    
 class Application(models.Model):
     student = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     job = models.ForeignKey(JobListing, on_delete=models.CASCADE)

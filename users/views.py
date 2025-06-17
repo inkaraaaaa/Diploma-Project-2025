@@ -23,18 +23,13 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
 from django.views.generic import TemplateView
-
 from .forms import ContactForm
-
 from django.shortcuts import redirect, render
 from vacancies.models import JobListing
 from sendreview.models import Comment
 from users.models import UserProfile, Notification
 from users.models import UserProfile
 from django.contrib.auth.decorators import login_required
-
-
-
 def signup(request):
     print("Hello")
     if request.method == "POST":

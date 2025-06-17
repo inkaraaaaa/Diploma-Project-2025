@@ -292,6 +292,53 @@
         }
         return cookieValue;
     }
+    return cookieValue;
+}
+
+function toggleMenu() {
+    const menu = document.querySelector('.header-menu');
+    if (menu) menu.classList.toggle('active');
+}
+
+function openPhotoModal() {
+    const modal = document.getElementById('photo-upload-modal');
+    if (modal) modal.style.display = 'block';
+}
+
+function closePhotoModal() {
+    const modal = document.getElementById('photo-upload-modal');
+    const previewContainer = document.getElementById('preview-container');
+    const input = document.getElementById('photo-file-input');
+
+    if (modal) modal.style.display = 'none';
+    if (previewContainer) previewContainer.style.display = 'none';
+    if (input) input.value = '';
+}
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById('preview-image');
+            if (preview) {
+                preview.src = e.target.result;
+                const container = document.getElementById('preview-container');
+                if (container) container.style.display = 'block';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function uploadPhoto() {
+    const fileInput = document.getElementById('photo-file-input');
+    const file = fileInput?.files[0];
+
+    if (!file) {
+        alert('Please select a photo first');
+        return;
+    }
 
     function toggleMenu() {
         const menu = document.querySelector('.header-menu');
@@ -328,6 +375,37 @@
         if (!file) {
             alert('Please select a photo first');
             return;
+    const formData = new FormData();
+    formData.append('photo', file);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+    const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    saveBtn.disabled = true;
+
+    fetch('{% url "upload_profile_photo" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const profilePhoto = document.querySelector('.profile-photo');
+            if (profilePhoto) {
+                profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();
+            }
+            closePhotoModal();
+            alert('Profile photo updated successfully!');
+        } else {
+            throw new Error(data.message || 'Error uploading photo');
         }
 
         if (!file.type.match('image.*')) {
@@ -431,9 +509,143 @@
             uploadForm.style.display = 'none';
         }
     }
+function toggleAboutEdit() {
+    const display = document.querySelector('.about-me-display');
+    const form = document.querySelector('.about-me-form');
+    if (display && form) {
+        display.style.display = display.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+}
 
-    function openSettingsModal() {
-        document.getElementById("settingsModal").style.display = "block";
+function toggleAccountEdit() {
+    const display = document.querySelector('.account-info-display');
+    const form = document.querySelector('.account-info-form');
+    if (display && form) {
+        display.style.display = display.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+function fetchNotifications() {
+    fetch('/userprofile/get-notifications/')
+        .then(response => response.json())
+        .then(data => {
+            const list = document.getElementById('notificationList');
+            if (!list) return;
+            list.innerHTML = '';
+
+            data.forEach(notification => {
+                const li = document.createElement('li');
+                li.textContent = notification.message;
+                if (!notification.is_read) {
+                    li.style.fontWeight = 'bold';
+                }
+
+                li.addEventListener('click', () => {
+                    li.remove();
+                    markNotificationAsRead(notification.id);
+                });
+
+                list.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка при получении уведомлений:', error);
+        });
+}
+
+function markNotificationAsRead(notificationId) {
+    fetch('/userprofile/mark-notification-read/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ id: notificationId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateUnreadCount();
+        } else {
+            console.error('Ошибка:', data.status);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при пометке уведомления как прочитанного:', error);
+    });
+}
+
+document.getElementById('notificationBtn')?.addEventListener('click', () => {
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        fetchNotifications();
+    }
+});
+
+document.addEventListener('click', function (event) {
+    const dropdown = document.getElementById('notificationDropdown');
+    const btn = document.getElementById('notificationBtn');
+    if (dropdown && btn && !dropdown.contains(event.target) && !btn.contains(event.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+function updateUnreadCount() {
+    fetch('/userprofile/unread-count/')
+        .then(response => response.json())
+        .then(data => {
+            const countSpan = document.getElementById('notification-count');
+            if (countSpan) {
+                if (data.unread_count > 0) {
+                    countSpan.textContent = data.unread_count;
+                    countSpan.style.display = 'inline-block';
+                } else {
+                    countSpan.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при получении количества уведомлений:', error);
+        });
+}
+
+// Автоматическое обновление
+updateUnreadCount();
+setInterval(updateUnreadCount, 60000); // Каждую минуту
+
+function toggleUploadForm() {
+    const uploadForm = document.querySelector('.upload-form');
+    if (uploadForm) {
+        uploadForm.style.display = (uploadForm.style.display === 'none' || uploadForm.style.display === '') ? 'block' : 'none';
+    }
+}
+
+function toggleSocialEdit() {
+    const display = document.querySelector('.social-networks-display');
+    const form = document.querySelector('.social-networks-form');
+    if (display && form) {
+        display.style.display = display.style.display === 'none' ? 'block' : 'none';
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function openSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.style.display = "block";
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById("settingsModal");
+    if (modal && event.target === modal) {
+        modal.style.display = "none";
     }
 
     function closeSettingsModal() {
@@ -544,7 +756,9 @@
         // Периодическое обновление счетчика
         setInterval(updateUnreadCount, 60000); // каждую минуту
     });
+};
 </script>
+
 
 </body>
 </html>

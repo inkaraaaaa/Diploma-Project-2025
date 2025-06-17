@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from datetime import timedelta
+from django.templatetags.static import static
 
 
 class Language(models.Model):
@@ -54,6 +55,13 @@ class UserProfile(AbstractUser):
 
     def get_languages_list(self):
         return self.languages.split(', ') if self.languages else []
+    
+    def get_photo_url(self):
+        try:
+            return self.profile_photo.url
+        except ValueError:
+            return static('img/default-avatar.png')
+
 
 
 

@@ -170,7 +170,9 @@ def get_notifications(request):
             n.delete()
 
     # Получить оставшиеся уведомления
-    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+    user_profile = request.user.userprofile
+    notifications = Notification.objects.filter(recipient=user_profile)
+
 
     data = [
         {

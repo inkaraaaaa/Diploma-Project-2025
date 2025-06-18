@@ -196,12 +196,6 @@ def hr_register_company(request):
 def hr_dashboard(request):
     return render(request, 'hr_dashboard.html')
 
-
-
-
-
-
-
 @hr_required
 def delete_internship(request, pk):
     internship = get_object_or_404(JobListing, pk=pk, company=request.user.hrcompany.company)
@@ -242,6 +236,7 @@ def applicant_detail(request, application_id):
 @hr_required
 @csrf_exempt
 def save_interview(request):
+    
     if request.method == 'POST':
         data = json.loads(request.body)
         app_id = data.get('app_id')
@@ -286,6 +281,7 @@ def save_interview(request):
 @login_required
 @require_POST
 def reject_application(request):
+    print("accept_application called")
     data = json.loads(request.body)
     app_id = data.get('app_id')
 
@@ -299,6 +295,7 @@ def reject_application(request):
 
         application.rejected = True
         application.save()
+        print('✅ Application updated:', application.id, application.accepted)
 
         # Уведомление студенту
         Notification.objects.create(
@@ -368,6 +365,7 @@ def application_detail(request, pk):
 
 @require_POST
 def accept_application(request):
+    print("accept_application called")
     import json
     data = json.loads(request.body)
 
@@ -379,6 +377,7 @@ def accept_application(request):
         application.accepted = True
         application.rejected = False
         application.save()
+        print('✅ Application updated:', application.id, application.accepted)
 
         # Создать уведомление студенту
         Notification.objects.create(

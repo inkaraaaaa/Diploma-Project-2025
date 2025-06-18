@@ -81,6 +81,7 @@ class Application(models.Model):
     cover_letter = models.TextField(blank=True)
     invited_to_interview = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('student', 'job')

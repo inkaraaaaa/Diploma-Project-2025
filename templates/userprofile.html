@@ -1,3 +1,4 @@
+
 {% load static %}
 <html lang="en">
 <head>
@@ -30,26 +31,25 @@
     <header>
         <h1 class="page-title">Account</h1>
         <div class="header-actions">
-    <button id="notificationBtn" class="icon-button">
-        <i class="fas fa-bell"></i>
-        <span id="notification-count" class="badge bg-danger" style="display: none;">0</span>
-    </button>
-    <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
-    <div class="notification-scroll">
-        <ul id="notificationList">
+            <button id="notificationBtn" class="icon-button">
+                <i class="fas fa-bell"></i>
+                <span id="notification-count" class="badge bg-danger" style="display: none;">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+            <div class="notification-scroll">
+                <ul id="notificationList">
             <!-- уведомления -->
-            <li>Notification 1</li>
-            <li>Notification 2</li>
-            <li>Notification 3</li>
+                    <li>Notification 1</li>
+                    <li>Notification 2</li>
+                    <li>Notification 3</li>
             <!-- добавь больше для проверки скролла -->
-        </ul>
-    </div>
-    <div class="dropdown-footer">
-        <a href="{% url 'student_applications' %}" class="view-all-button">View All</a>
-    </div>
-</div>
+                </ul>
+            </div>
+             <div class="dropdown-footer">
+                <a href="{% url 'student_applications' %}" class="view-all-button">View All</a>
+             </div>
+            </div>
 
-</div>
             <button class="icon-button" onclick="openSettingsModal()">
                 <i class="fas fa-cog"></i>
             </button>
@@ -61,22 +61,25 @@
 
                     <div style="margin-top: 40px; text-align: center;">
                         <div style="display: inline-flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                            <!-- Кнопка удаления профиля -->
-                            <form method="post" action="{% url 'delete_profile' %}" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');" style="margin: 0;">
+
+                            <form method="post" action="{% url 'delete_profile' %}"
+                                  onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');"
+                                  style="margin: 0;">
                                 {% csrf_token %}
-                                <button type="submit" class="button danger" style="min-width: 160px;">
-                                    <i class="fas fa-trash"></i> Delete Profile
+                                <button type="submit" class="button danger action-button">
+                                    <i class="fas fa-trash" style="margin-right: 8px;"></i> Delete Profile
                                 </button>
                             </form>
 
-                            <!-- Кнопка смены пароля -->
-                            <a href="{% url 'change_password' %}" class="button outline" style="min-width: 160px; display: flex; align-items: center; justify-content: center;">
+                            <a href="{% url 'change_password' %}" class="button outline action-button">
                                 <i class="fas fa-key" style="margin-right: 8px;"></i> Change Password
                             </a>
+
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </header>
 
 
@@ -248,9 +251,7 @@
         </div>
 
         </div>
-
-
-    </div>
+</div>
 
 
 <div id="photo-upload-modal" class="photo-upload-modal">
@@ -275,488 +276,175 @@
     </div>
 </div>
 
-
-
 <script>
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const trimmed = cookie.trim();
-                if (trimmed.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    return cookieValue;
-}
-
-function toggleMenu() {
-    const menu = document.querySelector('.header-menu');
-    if (menu) menu.classList.toggle('active');
-}
-
-function openPhotoModal() {
-    const modal = document.getElementById('photo-upload-modal');
-    if (modal) modal.style.display = 'block';
-}
-
-function closePhotoModal() {
-    const modal = document.getElementById('photo-upload-modal');
-    const previewContainer = document.getElementById('preview-container');
-    const input = document.getElementById('photo-file-input');
-
-    if (modal) modal.style.display = 'none';
-    if (previewContainer) previewContainer.style.display = 'none';
-    if (input) input.value = '';
-}
-
-function previewPhoto(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const preview = document.getElementById('preview-image');
-            if (preview) {
-                preview.src = e.target.result;
-                const container = document.getElementById('preview-container');
-                if (container) container.style.display = 'block';
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function uploadPhoto() {
-    const fileInput = document.getElementById('photo-file-input');
-    const file = fileInput?.files[0];
-
-    if (!file) {
-        alert('Please select a photo first');
-        return;
-    }
 
     function toggleMenu() {
         const menu = document.querySelector('.header-menu');
         menu.classList.toggle('active');
     }
 
-    function openPhotoModal() {
-        document.getElementById('photo-upload-modal').style.display = 'block';
-    }
-
-    function closePhotoModal() {
-        document.getElementById('photo-upload-modal').style.display = 'none';
-        document.getElementById('preview-container').style.display = 'none';
-        document.getElementById('photo-file-input').value = '';
-    }
-
-    function previewPhoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const preview = document.getElementById('preview-image');
-                preview.src = e.target.result;
-                document.getElementById('preview-container').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function uploadPhoto() {
-        const fileInput = document.getElementById('photo-file-input');
-        const file = fileInput.files[0];
-
-        if (!file) {
-            alert('Please select a photo first');
-            return;
-    const formData = new FormData();
-    formData.append('photo', file);
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-    formData.append('csrfmiddlewaretoken', csrfToken);
-
-    const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
-    const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-    saveBtn.disabled = true;
-
-    fetch('{% url "upload_profile_photo" %}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': csrfToken,
-        },
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-    })
-    .then(data => {
-        if (data.status === 'success') {
-            const profilePhoto = document.querySelector('.profile-photo');
-            if (profilePhoto) {
-                profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();
-            }
-            closePhotoModal();
-            alert('Profile photo updated successfully!');
-        } else {
-            throw new Error(data.message || 'Error uploading photo');
-        }
-
-        if (!file.type.match('image.*')) {
-            alert('Please select an image file (JPEG, PNG, etc.)');
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('photo', file);
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        formData.append('csrfmiddlewaretoken', csrfToken);
-
-        const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-        saveBtn.disabled = true;
-
-        // Замените на ваш реальный URL
-        fetch('/upload-profile-photo/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    const profilePhoto = document.querySelector('.profile-photo');
-                    profilePhoto.src = data.photo_url + '?t=' + new Date().getTime();
-                    closePhotoModal();
-                    alert('Profile photo updated successfully!');
-                } else {
-                    throw new Error(data.message || 'Error uploading photo');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error uploading photo: ' + error.message);
-            })
-            .finally(() => {
-                saveBtn.innerHTML = originalText;
-                saveBtn.disabled = false;
-            });
-    }
-
-    function toggleAboutEdit() {
-        const display = document.querySelector('.about-me-display');
-        const form = document.querySelector('.about-me-form');
-
-        if (display.style.display === 'none') {
-            display.style.display = 'block';
-            form.style.display = 'none';
-        } else {
-            display.style.display = 'none';
-            form.style.display = 'block';
-        }
-    }
-
-    function toggleAccountEdit() {
-        const display = document.querySelector('.account-info-display');
-        const form = document.querySelector('.account-info-form');
-
-        if (display.style.display === 'none') {
-            display.style.display = 'block';
-            form.style.display = 'none';
-        } else {
-            display.style.display = 'none';
-            form.style.display = 'block';
-        }
-    }
-
-    function toggleSocialEdit() {
-        const display = document.querySelector('.social-networks-display');
-        const form = document.querySelector('.social-networks-form');
-
-        if (display.style.display === 'none') {
-            display.style.display = 'block';
-            form.style.display = 'none';
-        } else {
-            display.style.display = 'none';
-            form.style.display = 'block';
-        }
-    }
-
-    function toggleUploadForm() {
-        const uploadForm = document.querySelector('.upload-form');
-        if (uploadForm.style.display === 'none' || uploadForm.style.display === '') {
-            uploadForm.style.display = 'block';
-        } else {
-            uploadForm.style.display = 'none';
-        }
-    }
-function toggleAboutEdit() {
-    const display = document.querySelector('.about-me-display');
-    const form = document.querySelector('.about-me-form');
-    if (display && form) {
-        display.style.display = display.style.display === 'none' ? 'block' : 'none';
-        form.style.display = form.style.display === 'block' ? 'none' : 'block';
-    }
-}
-
-function toggleAccountEdit() {
-    const display = document.querySelector('.account-info-display');
-    const form = document.querySelector('.account-info-form');
-    if (display && form) {
-        display.style.display = display.style.display === 'none' ? 'block' : 'none';
-        form.style.display = form.style.display === 'block' ? 'none' : 'block';
-    }
-}
-
-function fetchNotifications() {
-    fetch('/userprofile/get-notifications/')
-        .then(response => response.json())
-        .then(data => {
-            const list = document.getElementById('notificationList');
-            if (!list) return;
-            list.innerHTML = '';
-
-            data.forEach(notification => {
-                const li = document.createElement('li');
-                li.textContent = notification.message;
-                if (!notification.is_read) {
-                    li.style.fontWeight = 'bold';
-                }
-
-                li.addEventListener('click', () => {
-                    li.remove();
-                    markNotificationAsRead(notification.id);
-                });
-
-                list.appendChild(li);
-            });
-        })
-        .catch(error => {
-            console.error('Ошибка при получении уведомлений:', error);
-        });
-}
-
-function markNotificationAsRead(notificationId) {
-    fetch('/userprofile/mark-notification-read/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({ id: notificationId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            updateUnreadCount();
-        } else {
-            console.error('Ошибка:', data.status);
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка при пометке уведомления как прочитанного:', error);
-    });
-}
-
-document.getElementById('notificationBtn')?.addEventListener('click', () => {
-    const dropdown = document.getElementById('notificationDropdown');
-    if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        fetchNotifications();
-    }
-});
-
-document.addEventListener('click', function (event) {
-    const dropdown = document.getElementById('notificationDropdown');
-    const btn = document.getElementById('notificationBtn');
-    if (dropdown && btn && !dropdown.contains(event.target) && !btn.contains(event.target)) {
-        dropdown.style.display = 'none';
-    }
-});
-
-function updateUnreadCount() {
-    fetch('/userprofile/unread-count/')
-        .then(response => response.json())
-        .then(data => {
-            const countSpan = document.getElementById('notification-count');
-            if (countSpan) {
-                if (data.unread_count > 0) {
-                    countSpan.textContent = data.unread_count;
-                    countSpan.style.display = 'inline-block';
-                } else {
-                    countSpan.style.display = 'none';
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка при получении количества уведомлений:', error);
-        });
-}
-
-// Автоматическое обновление
-updateUnreadCount();
-setInterval(updateUnreadCount, 60000); // Каждую минуту
-
-function toggleUploadForm() {
-    const uploadForm = document.querySelector('.upload-form');
-    if (uploadForm) {
-        uploadForm.style.display = (uploadForm.style.display === 'none' || uploadForm.style.display === '') ? 'block' : 'none';
-    }
-}
-
-function toggleSocialEdit() {
-    const display = document.querySelector('.social-networks-display');
-    const form = document.querySelector('.social-networks-form');
-    if (display && form) {
-        display.style.display = display.style.display === 'none' ? 'block' : 'none';
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    }
-}
-
-function openSettingsModal() {
-    const modal = document.getElementById("settingsModal");
-    if (modal) modal.style.display = "block";
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById("settingsModal");
-    if (modal) modal.style.display = "none";
-}
-
-window.onclick = function(event) {
-    const modal = document.getElementById("settingsModal");
-    if (modal && event.target === modal) {
-        modal.style.display = "none";
-    }
-
-    function closeSettingsModal() {
-        document.getElementById("settingsModal").style.display = "none";
-    }
-
-    // Функция для отметки уведомления как прочитанного
-    function markNotificationAsRead(notificationId) {
-        fetch('/userprofile/mark-notification-read/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ id: notificationId })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    updateUnreadCount();
-                } else {
-                    console.error('Ошибка:', data.status);
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при отметке уведомления:', error);
-            });
-    }
-
-    // Функция для получения уведомлений
-    function fetchNotifications() {
-        fetch('/userprofile/get-notifications/')
-            .then(response => response.json())
-            .then(data => {
-                const list = document.getElementById('notificationList');
-                list.innerHTML = '';
-
-                data.forEach(notification => {
-                    const li = document.createElement('li');
-                    li.textContent = notification.message;
-                    if (!notification.is_read) {
-                        li.style.fontWeight = 'bold';
-                    }
-
-                    li.addEventListener('click', () => {
-                        li.remove();
-                        markNotificationAsRead(notification.id);
-                    });
-
-                    list.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error('Ошибка при получении уведомлений:', error);
-            });
-    }
-
-    // Функция для обновления счетчика непрочитанных уведомлений
-    function updateUnreadCount() {
-        fetch('/userprofile/unread-count/')
-            .then(response => response.json())
-            .then(data => {
-                const countSpan = document.getElementById('notification-count');
-                if (data.unread_count > 0) {
-                    countSpan.textContent = data.unread_count;
-                    countSpan.style.display = 'inline-block';
-                } else {
-                    countSpan.style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при получении количества уведомлений:', error);
-            });
-    }
-
-    // Инициализация после загрузки страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        // Обработчик для кнопки уведомлений
+document.addEventListener('DOMContentLoaded', () => {
+        // Уведомления
         const notificationBtn = document.getElementById('notificationBtn');
-        if (notificationBtn) {
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationCount = document.getElementById('notification-count');
+
+        if (notificationBtn && notificationDropdown) {
             notificationBtn.addEventListener('click', () => {
-                const dropdown = document.getElementById('notificationDropdown');
-                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                notificationDropdown.style.display =
+                    notificationDropdown.style.display === 'none' ? 'block' : 'none';
                 fetchNotifications();
             });
+
+            document.addEventListener('click', function (event) {
+                if (!notificationDropdown.contains(event.target) && !notificationBtn.contains(event.target)) {
+                    notificationDropdown.style.display = 'none';
+                }
+            });
+
+            updateUnreadCount();
+            setInterval(updateUnreadCount, 60000); // обновлять каждые 60 секунд
         }
 
-        // Закрытие выпадающего меню при клике вне его
-        document.addEventListener('click', function (event) {
-            const dropdown = document.getElementById('notificationDropdown');
-            const btn = document.getElementById('notificationBtn');
-            if (dropdown && btn && !dropdown.contains(event.target) && !btn.contains(event.target)) {
-                dropdown.style.display = 'none';
+        function updateUnreadCount() {
+            fetch('/userprofile//unread-count/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        notificationCount.style.display = 'inline-block';
+                        notificationCount.textContent = data.count;
+                    } else {
+                        notificationCount.style.display = 'none';
+                    }
+                });
+        }
+
+        function fetchNotifications() {
+    fetch('/userprofile/get-notifications/')
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('notificationList');
+            list.innerHTML = '';
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.message;
+                    list.appendChild(li);
+                });
+            } else {
+                list.innerHTML = '<li>No notifications</li>';
             }
-        });
+        })
+        .catch(err => console.error('Fetch error:', err));
+}
 
-        // Закрытие модального окна при клике вне его
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById("settingsModal");
-            if (event.target === modal) {
-                modal.style.display = "none";
+
+        // Редактировать "О себе"
+        window.toggleAboutEdit = function() {
+            const display = document.querySelector('.about-me-display');
+            const form = document.querySelector('.about-me-form');
+            if (display && form) {
+                display.style.display = display.style.display === 'none' ? 'block' : 'none';
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
             }
-        });
+        }
+    window.toggleUploadForm = function () {
+        const uploadForm = document.querySelector('.upload-form');
+        if (!uploadForm) {
+            console.warn('Upload form not found!');
+            return;
+        }
+        uploadForm.style.display = (uploadForm.style.display === 'none' || uploadForm.style.display === '')
+            ? 'block'
+            : 'none';
+    };
 
-        // Инициализация счетчика уведомлений
-        updateUnreadCount();
 
-        // Периодическое обновление счетчика
-        setInterval(updateUnreadCount, 60000); // каждую минуту
+    // Редактировать "Аккаунт"
+        window.toggleAccountEdit = function() {
+            const display = document.querySelector('.account-info-display');
+            const form = document.querySelector('.account-info-form');
+            if (display && form) {
+                display.style.display = display.style.display === 'none' ? 'block' : 'none';
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        window.toggleSocialEdit = function () {
+            const display = document.querySelector('.social-networks-display');
+            const form = document.querySelector('.social-networks-form');
+
+            if (display && form) {
+                const isFormVisible = form.style.display === 'block';
+                display.style.display = isFormVisible ? 'block' : 'none';
+                form.style.display = isFormVisible ? 'none' : 'block';
+            } else {
+                console.warn('Missing elements for social edit:', { display, form });
+            }
+        };
+
+
+        // Открытие/закрытие модалки с настройками
+        window.openSettingsModal = function() {
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        window.closeSettingsModal = function() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Открытие/закрытие модалки фото
+        window.openPhotoModal = function() {
+            document.querySelector('.photo-upload-modal').style.display = 'block';
+        }
+
+        window.closePhotoModal = function() {
+            document.querySelector('.photo-upload-modal').style.display = 'none';
+        }
+
+        // Загрузка фото
+        window.uploadPhoto = function() {
+            const fileInput = document.getElementById('photo-file-input');
+            const file = fileInput?.files[0];
+
+            if (!file) return alert('Please select a photo first');
+            if (!file.type.match('image.*')) return alert('Only image files are allowed');
+            if (file.size > 5 * 1024 * 1024) return alert('File size must be less than 5MB');
+
+            const formData = new FormData();
+            formData.append('photo', file);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+            const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            saveBtn.disabled = true;
+
+            fetch('/upload-profile-photo/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrfToken }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const profilePhoto = document.querySelector('.profile-photo');
+                        profilePhoto.src = data.photo_url + '?t=' + new Date().getTime(); // обход кэша
+                        closePhotoModal();
+                        alert('Profile photo updated successfully!');
+                    } else {
+                        throw new Error(data.message || 'Upload error');
+                    }
+                })
+                .catch(error => {
+                    alert('Error uploading photo: ' + error.message);
+                })
+                .finally(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                });
+        }
     });
-};
 </script>
 
 

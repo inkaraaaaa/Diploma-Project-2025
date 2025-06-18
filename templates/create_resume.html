@@ -1,3 +1,4 @@
+
 {% load static %}
 <html lang="en">
 <head>
@@ -129,7 +130,6 @@
                         Next Step
                         <i class="fas fa-arrow-right"></i>
                     </button>
-                    </button>
                 </div>
             </form>
         </div>
@@ -189,7 +189,7 @@
                     <div class="preview-section-title">
                         <i class="fas fa-globe"></i> Languages
                     </div>
-                    <div class="languages-container">
+                    <div class="languages-container" id="languages-preview">
                         {% for language in user.languages.all %}
                             <span class="skill-tag">{{ language.name }}</span>
                             {% empty %}
@@ -213,6 +213,7 @@
         const successNotification = document.getElementById('success-notification');
         const educationFields = document.getElementById('education-fields');
         const previewElement = document.getElementById('resume-preview');
+        setupEducationListeners();
 
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
@@ -231,26 +232,21 @@
         addEducationBtn.addEventListener('click', function() {
             const fieldGroup = educationFields.querySelector('.field-group').cloneNode(true);
 
-            // Clear input values
+            // Очистка полей
             fieldGroup.querySelectorAll('input, textarea').forEach(input => {
                 input.value = '';
             });
 
-            // Add event listener to remove button
+            // Добавление кнопки удаления
             const removeBtn = fieldGroup.querySelector('.remove-field');
             removeBtn.addEventListener('click', handleRemoveField);
 
             educationFields.appendChild(fieldGroup);
 
-            // Add entrance animation
-            fieldGroup.style.opacity = '0';
-            fieldGroup.style.transform = 'translateY(20px)';
-
-            setTimeout(() => {
-                fieldGroup.style.opacity = '1';
-                fieldGroup.style.transform = 'translateY(0)';
-            }, 10);
+            // Повторно применить слушатели
+            setupEducationListeners();
         });
+
 
         // Setup initial remove buttons
         document.querySelectorAll('.remove-field').forEach(button => {
@@ -273,7 +269,7 @@
             }
         }
 
-        // Update preview
+        //   preview
         updatePreviewBtn.addEventListener('click', function() {
             updateResume();
             showSuccessNotification();
@@ -287,74 +283,118 @@
                 successNotification.classList.remove('visible');
             }, 3000);
         }
-
-        function updateResume() {
-
-            const summary = document.getElementById('summary').value || 'Creative designer with a passion for intuitive user experiences. Skilled in digital product design with a focus on user-centered design principles and innovative solutions.';
-
-
-            const contactInfo = `
-                <span><i class="fas fa-envelope"></i> ${email}</span>
-                <span><i class="fas fa-phone"></i> ${phone}</span>
-                <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
-            `;
-            previewElement.querySelector('.preview-contact').innerHTML = contactInfo;
-
-            // Update summary
-            previewElement.querySelector('.preview-section:nth-child(2) p').textContent = summary;
-
-            // Update education section
-            updateEducation();
-
-            // Update skills section with tags
-            const skillsArray = skills.split(',').map(skill => skill.trim()).filter(skill => skill);
-
-            let skillsHTML = '';
-            skillsArray.forEach(skill => {
-                skillsHTML += `<span class="skill-tag">${skill}</span>`;
-            });
-
-            document.getElementById('skills-preview').innerHTML = skillsHTML || '<p>No skills added yet</p>';
-
-            // Update other sections
-            const languages = document.getElementById('languages').value || 'English (Native), French (Intermediate), Spanish (Basic)';
-
-            previewElement.querySelector('.preview-section:nth-child(5) p').textContent = languages;
-        }
-
-        // Update education section
-        function updateEducation() {
-            // Get all education field groups
+        function setupEducationListeners() {
             const educationGroups = document.querySelectorAll('#education-fields .field-group');
 
-            // Get the education section in the preview
+            educationGroups.forEach(group => {
+                const inputs = group.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('input', updateEducation);
+                });
+            });
+        }
+
+        function updateResume() {
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+            const summary = document.getElementById('summary').value || 'Creative designer with a passion for intuitive user experiences. Skilled in digital product design with a focus on user-centered design principles and innovative solutions.';
+            const skillsValue = document.getElementById('skills').value.trim();
+            const skillsPreview = document.getElementById('skills-preview');
+
+            if (skillsValue) {
+                const skillsArray = skillsValue.split(',').map(s => s.trim()).filter(s => s);
+                let skillsHTML = '';
+                skillsArray.forEach(skill => {
+                    skillsHTML += `<span class="skill-tag">${skill}</span>`;
+                });
+                skillsPreview.innerHTML = skillsHTML;
+            }
+
+
+            const languagesValue = document.getElementById('languages').value.trim();
+            const languagesPreview = document.getElementById('languages-preview');
+
+            if (languagesValue) {
+                const languagesArray = languagesValue.split(',').map(l => l.trim()).filter(l => l);
+                let languagesHTML = '';
+                languagesArray.forEach(lang => {
+                    languagesHTML += `<span class="skill-tag">${lang}</span>`;
+                });
+                languagesPreview.innerHTML = languagesHTML;
+            }
+
+            const contactContainer = previewElement.querySelector('.preview-contact');
+
+            const currentSpans = contactContainer.querySelectorAll('span');
+
+            const emailValue = email || currentSpans[0]?.textContent?.trim() || 'your@email.com';
+            const phoneValue = phone || currentSpans[1]?.textContent?.trim() || '+1234567890';
+            const locationValue = location || currentSpans[2]?.textContent?.trim() || 'Your City';
+
+            const contactInfo = `
+                <span><i class="fas fa-envelope"></i> ${emailValue}</span>
+                <span><i class="fas fa-phone"></i> ${phoneValue}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${locationValue}</span>
+            `;
+
+            contactContainer.innerHTML = contactInfo;
+
+
+            // Обновление summary
+            previewElement.querySelector('.preview-section:nth-child(2) p').textContent = summary;
+
+            // Обновление блока "Education"
+            updateEducation();
+
+
+        }
+
+        function updateEducation() {
+            const educationGroups = document.querySelectorAll('#education-fields .field-group');
             const educationSection = document.querySelector('.preview-section:nth-child(3)');
 
-            // Clear existing education items except the title
+            // Сохраняем текущую секцию заголовка
             const sectionTitle = educationSection.querySelector('.preview-section-title').cloneNode(true);
-            educationSection.innerHTML = '';
-            educationSection.appendChild(sectionTitle);
 
-            // Process each education entry
+            // Подготовим новый контент в памяти
+            const newContent = document.createElement('div');
+            newContent.appendChild(sectionTitle);
+
+            let hasValidEntry = false;
+
             educationGroups.forEach(group => {
-                const description = group.querySelector('textarea[name="educationDescription[]"]').value ||
-                    'Graduated with honors. Specialized in interaction design and user experience research.';
+                const institution = group.querySelector('input[name="school[]"]').value.trim();
+                const degree = group.querySelector('input[name="degree[]"]').value.trim();
+                const period = group.querySelector('input[name="educationPeriod[]"]').value.trim();
+                const description = group.querySelector('textarea[name="educationDescription[]"]').value.trim();
 
-                // Create education item for preview
+                // если все 4 поля пусты — пропустить
+                if (!institution && !degree && !period && !description) return;
+
+                hasValidEntry = true;
+
                 const educationItem = document.createElement('div');
                 educationItem.className = 'preview-item';
                 educationItem.innerHTML = `
-                <div class="preview-item-title">${institution}</div>
-                <div class="preview-item-subtitle">
-                    <span>${degree}</span>
-                    <span>${period}</span>
-                </div>
-                <p>${description}</p>
-            `;
+            <div class="preview-item-title">${institution || 'Institution Name'}</div>
+            <div class="preview-item-subtitle">
+                <span>${degree || 'Degree'}</span>
+                <span>${period || 'Years'}</span>
+            </div>
+            <p>${description || 'Graduated with honors. Specialized in interaction design and user experience research.'}</p>
+        `;
 
-                educationSection.appendChild(educationItem);
+                newContent.appendChild(educationItem);
             });
+
+
+            if (hasValidEntry) {
+                educationSection.innerHTML = newContent.innerHTML;
+            }
+
         }
+
 
         const printResume = function () {
             const element = document.getElementById('resume-preview');
@@ -613,7 +653,7 @@
                 const styleElement = document.createElement('style');
                 document.head.appendChild(styleElement);
 
-                languagesSection.querySelector('p').innerHTML = languagesHTML;
+                document.getElementById('languages-preview').innerHTML = languagesHTML;
             } else {
                 languagesSection.querySelector('p').textContent = 'No languages added yet';
             }

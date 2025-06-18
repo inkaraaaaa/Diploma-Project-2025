@@ -32,7 +32,31 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',
     'http://34.32.87.142',
     'http://34.118.56.95',
+    'https://localhost',
+    'https://127.0.0.1',
+    'https://34.32.87.142',
+    'https://34.118.56.95',
 ]
+
+# Security settings for production
+SECURE_SSL_REDIRECT = os.environ.get('SSL_REDIRECT', 'False').lower() == 'true'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if not DEBUG else None
+
+# Only enforce HTTPS settings if SSL_REDIRECT is enabled
+if SECURE_SSL_REDIRECT:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    # For HTTP access, disable secure settings
+    SECURE_BROWSER_XSS_FILTER = False
+    SECURE_CONTENT_TYPE_NOSNIFF = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # Application definition
 

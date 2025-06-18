@@ -237,6 +237,7 @@ def applicant_detail(request, application_id):
 @csrf_exempt
 def save_interview(request):
     
+    
     if request.method == 'POST':
         data = json.loads(request.body)
         app_id = data.get('app_id')
@@ -262,6 +263,9 @@ def save_interview(request):
             # Обновляем статус заявки
             application.invited_to_interview = True
             application.save()
+            print('POST to save_interview:', data)
+            print('App ID:', app_id)
+            print('Creating Interview...')
 
             # ✅ Уведомление студенту
             Notification.objects.create(
@@ -295,7 +299,9 @@ def reject_application(request):
 
         application.rejected = True
         application.save()
-        print('✅ Application updated:', application.id, application.accepted)
+        print("Updating application:", application.id)
+        print("Rejected before:", application.rejected)
+
 
         # Уведомление студенту
         Notification.objects.create(
@@ -377,7 +383,9 @@ def accept_application(request):
         application.accepted = True
         application.rejected = False
         application.save()
-        print('✅ Application updated:', application.id, application.accepted)
+        print("Updating application:", application.id)
+        print("Rejected before:", application.rejected)
+
 
         # Создать уведомление студенту
         Notification.objects.create(

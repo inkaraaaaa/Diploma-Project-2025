@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from home_after import views
 from userprofile.views import update_about_me
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db import connection
 
 
@@ -16,8 +16,14 @@ def health_check(request):
     return JsonResponse({"status": "healthy"})
 
 
+def favicon_view(request):
+    """Simple favicon handler to prevent 500 errors."""
+    return HttpResponse(status=204)  # No Content
+
+
 urlpatterns = [
     path('health/', health_check, name='health_check'),
+    path('favicon.ico', favicon_view, name='favicon'),
     path('admin/', admin.site.urls),
     path('company/<int:company_id>/', company_detail, name='company_detail'),
     path("company/<int:company_id>/add_comment/", add_comment, name="add_comment"),

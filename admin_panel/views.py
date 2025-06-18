@@ -294,9 +294,18 @@ def add_city(request):
 
 def top_companies_chart():
     data = JobListing.objects.values('company__name').annotate(total=Count('id')).order_by('-total')[:5]
+    
+    # Handle case when there's no data
+    if not data:
+        companies = ['No data']
+        totals = [0]
+    else:
+        companies = [d['company__name'] for d in data]
+        totals = [d['total'] for d in data]
+    
     fig = px.bar(
-        x=[d['total'] for d in data],
-        y=[d['company__name'] for d in data],
+        x=totals,
+        y=companies,
         orientation='h',
         labels={'x': 'Vacancies', 'y': 'Company'},
         title='Top-5 Companies Offering the Most Internships',
@@ -308,9 +317,18 @@ def top_companies_chart():
 
 def top_jobs_by_applications():
     data = Application.objects.values('job__title').annotate(count=Count('id')).order_by('-count')[:5]
+    
+    # Handle case when there's no data
+    if not data:
+        job_titles = ['No applications yet']
+        counts = [0]
+    else:
+        job_titles = [d['job__title'] for d in data]
+        counts = [d['count'] for d in data]
+    
     fig = px.bar(
-        x=[d['job__title'] for d in data],
-        y=[d['count'] for d in data],
+        x=job_titles,
+        y=counts,
         labels={'x': 'Job Title', 'y': 'Applications'},
         title='Top-5 Most Applied Internships',
     )
@@ -323,9 +341,6 @@ def top_jobs_by_applications():
     return plot(fig, output_type='div')
 
 
-
-
-
 def job_posting_trend():
     data = (
         JobListing.objects
@@ -334,9 +349,18 @@ def job_posting_trend():
         .annotate(count=Count('id'))
         .order_by('month')
     )
+    
+    # Handle case when there's no data
+    if not data:
+        months = ['No data']
+        counts = [0]
+    else:
+        months = [d['month'] for d in data]
+        counts = [d['count'] for d in data]
+    
     fig = px.line(
-        x=[d['month'] for d in data],
-        y=[d['count'] for d in data],
+        x=months,
+        y=counts,
         labels={'x': 'Month', 'y': 'New Vacancies'},
         title='Monthly Internship Posting Trends',
     )

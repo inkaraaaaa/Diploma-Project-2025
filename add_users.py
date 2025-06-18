@@ -35,7 +35,7 @@ users_data = [
     }
 ]
 
-# Create users
+# Create or update users
 for user_data in users_data:
     user, created = UserProfile.objects.get_or_create(
         username=user_data['username'],
@@ -51,15 +51,16 @@ for user_data in users_data:
         }
     )
     
+    # Always set password to ensure it's correct
+    user.set_password('IntGo12345')
+    user.save()
+    
     if created:
-        # Set password for new users - same password for all
-        user.set_password('IntGo12345')
-        user.save()
         print(f"Created user: {user.username}")
     else:
-        print(f"User {user.username} already exists")
+        print(f"Updated password for existing user: {user.username}")
 
-# Update admin password
+# Ensure admin password is correct
 try:
     admin = UserProfile.objects.get(username="admin")
     admin.set_password("IntGo12345")
@@ -67,3 +68,5 @@ try:
     print("Admin password updated to 'IntGo12345'")
 except UserProfile.DoesNotExist:
     print("Admin user does not exist")
+
+print("All users have been created/updated with password 'IntGo12345'")

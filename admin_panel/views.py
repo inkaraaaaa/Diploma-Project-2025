@@ -221,18 +221,22 @@ def export_applicants_csv(request, job_id):
 
     return response
 
-def download_cv(request, user_id):
-    user = get_object_or_404(UserProfile, id=user_id)
-    document = user.documents.first()
-    if not document or not document.upload:
-        raise Http404("CV not found")
+from django.http import HttpResponse, FileResponse, Http404
 
-    file_path = document.upload.path
-    with open(file_path, 'rb') as f:
-        response = HttpResponse(f.read(), content_type='application/pdf')
-        filename = f"{user.first_name}_{user.last_name}.pdf"
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        return response
+def download_cv(request, student_id):
+    try:
+        student = UserProfile.objects.get(id=student_id)
+        cv_doc = student.get_cv()  # должен возвращать объект Document
+
+        if not cv_doc or not cv_doc.upload:
+            raise Http404("CV not found")
+
+        # Формируем красивое имя файла
+        filename = f"CV_{student.first_name}_{student.last_name}.pdf"
+        return FileResponse(cv_doc.upload.open(), as_attachment=True, filename=filename)
+
+    except UserProfile.DoesNotExist:
+        raise Http404("Student not found")
 
 @csrf_exempt
 def delete_message(request, message_id):

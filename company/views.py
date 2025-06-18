@@ -216,17 +216,26 @@ def application_detail(request, pk):
         'applications': applications,
     })
 
+from django.http import Http404, FileResponse
+from users.models import UserProfile
+
 @hr_required
-def download_cv(request, user_id):
-    user = get_object_or_404(UserProfile, id=user_id)
+def download_cv(request, student_id):
+    try:
+        student = UserProfile.objects.get(id=student_id)
+        cv_doc = student.get_cv()  # должен возвращать объект Document
 
-    if not user.cv:
-        raise Http404("CV not found")
+        if not cv_doc or not cv_doc.upload:
+            raise Http404("CV not found")
 
-    response = HttpResponse(user.cv, content_type='application/pdf')
-    filename = f"{user.first_name}_{user.last_name}_CV.pdf"
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
+        # Формируем красивое имя файла
+        filename = f"CV_{student.first_name}_{student.last_name}.pdf"
+        return FileResponse(cv_doc.upload.open(), as_attachment=True, filename=filename)
+
+    except UserProfile.DoesNotExist:
+        raise Http404("Student not found")
+
+
 
 @hr_required
 def applicant_detail(request, application_id):

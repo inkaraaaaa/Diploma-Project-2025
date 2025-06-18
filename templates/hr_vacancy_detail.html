@@ -132,11 +132,14 @@
                     {% endif %}
                     <div>
                       <h5 class="mb-0">{{ app.student.first_name }} {{ app.student.last_name }}</h5>
-                      {% if app.student.cv %}
-                        <a href="{% url 'download_cv' app.student.id %}" target="_blank">
-                          <img src="{% static 'icons/document.svg' %}" alt="CV" width="24" height="24">
-                        </a>
-                      {% endif %}
+                      {% with app.student.get_cv as cv %}
+  {% if cv %}
+    <a href="{{ cv.upload.url }}" target="_blank">
+      <img src="{% static 'icons/document.svg' %}" alt="CV" width="24" height="24">
+    </a>
+  {% endif %}
+{% endwith %}
+
                     </div>
                   </div>
 

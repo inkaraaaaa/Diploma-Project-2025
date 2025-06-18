@@ -171,7 +171,7 @@ def get_notifications(request):
 
     # Получить оставшиеся уведомления
     user_profile = request.user
-    notifications = Notification.objects.filter(recipient=user_profile)
+    notifications = Notification.objects.filter(recipient=user_profile).order_by('-created_at')
 
 
     data = [

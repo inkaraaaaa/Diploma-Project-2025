@@ -61,6 +61,8 @@ class UserProfile(AbstractUser):
             return self.profile_photo.url
         except ValueError:
             return static('img/default-avatar.png')
+    def get_cv(self):
+        return self.document_set.first()
 
 
 

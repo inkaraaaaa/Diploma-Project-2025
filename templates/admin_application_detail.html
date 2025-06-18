@@ -144,16 +144,17 @@
 						<td>{{ application.student.university_course }}</td>
 						<td>{{ application.student.city }}</td>
 						<td>
-							{% with document=application.student.documents.first %}
-								{% if document %}
-									<a href="{% url 'download_cv' application.student.id %}" download="{{ application.student.first_name }}_{{ application.student.last_name }}.pdf">
-										<img src="{% static 'icons/document.svg' %}" alt="CV" width="20" height="20">
-									</a>
-								{% else %}
-									—
-								{% endif %}
-							{% endwith %}
-						</td>
+  {% with document=user.documents.first %}
+    {% if document %}
+      <a href="{% url 'admin_download_cv' user.id %}" download="{{ user.first_name }}_{{ user.last_name }}.pdf">
+        <img src="{% static 'icons/document.svg' %}" alt="CV" width="20" height="20">
+      </a>
+    {% else %}
+      —
+    {% endif %}
+  {% endwith %}
+</td>
+
 					</tr>
 					{% empty %}
 					<tr><td colspan="6">No applicants yet.</td></tr>

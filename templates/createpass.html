@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Password - InternGO</title>
+    <link rel="stylesheet" href="/static/css/stylesign.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <div class="form-box">
+                <h2>Create new password</h2>
+                <p>Write a new password</p>
+
+                <form id="create-password-form" method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="error-box">
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="input-box">
+                        <label for="password">Password</label>
+                        <input type="password" name="new_password1" id="password">
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="input-box">
+                        <label for="verify-password">Verify Password</label>
+                        <input type="password" name="new_password2" id="verify-password">
+                        <span class="error-message"></span>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Create new password</button>
+                    <div class="bottom-text">
+                        <a href="signIn.html">← Back to the sign in</a> 
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="image-container">
+                <img src="/static/images/photoformain.png" alt="Abstract Design">
+                <div class="overlay-text">Find Your Internship</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

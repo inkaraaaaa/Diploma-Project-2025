@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Boxicons -->
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<!-- My CSS -->
+	<link rel="stylesheet" href="/static/css/admin.css">
+
+	<title>InternGO</title>
+</head>
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+            <i class='bx bxl-google' ></i>
+			<span class="text">InternGO</span>
+		</a>
+		<ul class="side-menu top">
+			<li>
+				<a href="{% url 'admin_panel' %}">
+					<i class='bx bxs-dashboard' ></i>
+					<span class="text">Dashboard</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<i class='bx bxs-group'></i>
+					<span class="text">Students</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'job_listing_list' %}">
+					<i class='bx bxs-briefcase-alt-2'></i>
+					<span class="text">Internships</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'application_list' %}">
+					<i class='bx bx-envelope'></i>
+					<span class="text">Applications</span>
+				</a>
+			</li>
+			<li class="active">
+				<a href="{% url 'company_list' %}">
+					<i class='bx bxs-buildings'></i>
+					<span class="text">Companies</span>
+				</a>
+			</li>
+		</ul>
+		<ul class="side-menu">
+			<li>
+				<a href="#">
+					<i class='bx bxs-cog' ></i>
+					<span class="text">Settings</span>
+				</a>
+			</li>
+			<li>
+				<a href="{% url 'adminlogout' %}" class="logout">
+					<i class='bx bxs-log-out-circle' ></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' ></i>
+			<a href="#" class="nav-link">Menu</a>
+			<form action="#">
+				<div class="form-input">
+					<input type="search" placeholder="Search...">
+					<button type="submit" class="search-btn"><i class='bx bx-search' ></i></button>
+				</div>
+			</form>
+			<input type="checkbox" id="switch-mode" hidden>
+			<label for="switch-mode" class="switch-mode"></label>
+			<a href="#" class="notification" id="notification-btn">
+				<i class='bx bxs-bell'></i>
+				<span class="num" style="display: none;">0</span>
+			</a>
+			<div id="notification-dropdown" class="notification-dropdown">
+			</div>
+			{% if request.user.is_authenticated and request.user.profile_photo %}
+        <img src="{{ request.user.profile_photo.url }}" alt="Admin Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+    {% else %}
+        <img src="/static/images/people.png" alt="Default Photo">
+    {% endif %}
+		</nav>
+		<!-- NAVBAR -->
+
+		<!-- MAIN -->
+		<main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>HR Requests</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="#">Dashboard</a></li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li><a class="active" href="#">HR Requests</a></li>
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="table-data">
+                <div class="order">
+                    <div class="head">
+                        <h3>Requests</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Logo</th>
+                                <th>Company</th>
+                                <th>HR Name</th>
+                                <th>Email</th>
+                                <th>City</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in requests %}
+                                <tr {% if not r.is_reviewed %}style="background-color: #ffecec;"{% endif %}>
+                                    <td>
+                                        {% if r.logo %}
+                                            <img src="{{ r.logo.url }}" width="40" height="40" style="border-radius: 8px;">
+                                        {% else %}
+                                            <img src="/static/images/default_logo.png" width="40" height="40" style="border-radius: 8px;">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ r.company_name }}</td>
+                                    <td>{{ r.hr_name }}</td>
+                                    <td>{{ r.hr_email }}</td>
+                                    <td>{{ r.city.name }}</td>
+                                    <td>
+                                         {% if r.is_reviewed %}
+                                            {% if r.is_approved %}
+                                                ✅ 
+                                            {% else %}
+                                                ❌ 
+                                            {% endif %}
+                                        {% else %}
+                                            ⏳
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not r.is_reviewed %}
+                                            <a href="{% url 'approve_hr_request' r.pk %}" title="Approve">
+                                                <img src="/static/icons/check.svg" alt="Approve" width="18" height="18" style="margin-right: 8px;">
+                                            </a>
+                                            <a href="{% url 'reject_hr_request' r.pk %}" title="Reject">
+                                                <img src="/static/icons/cross.svg" alt="Reject" width="18" height="18">
+                                            </a>
+                                        {% else %}
+                                                —
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                        <tr><td colspan="7">No HR requests found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'company_list' %}">← Back to Companies List</a>
+    </div>
+</div>
+</main>
+        
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	
+
+	<script src="/static/script/admin.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+	const notificationBtn = document.getElementById("notification-btn");
+	const dropdown = document.getElementById("notification-dropdown");
+	const notificationCount = notificationBtn.querySelector(".num");
+
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== "") {
+			const cookies = document.cookie.split(";");
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				if (cookie.startsWith(name + "=")) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+
+	function loadNotifications() {
+		fetch("/api/unread-messages-details/")
+			.then(response => response.json())
+			.then(data => {
+				dropdown.innerHTML = "";
+				data.messages.forEach(msg => {
+					const item = document.createElement("div");
+					item.className = "notification-item";
+					if (!msg.is_read) item.classList.add("unread");
+
+					item.innerHTML = `
+						<p><strong>${msg.first_name} ${msg.last_name}</strong> (<em>${msg.email}</em>)</p>
+						<p>${msg.message}</p>
+						<p class="timestamp">${msg.time}</p>
+						<button onclick="deleteMessage(${msg.id})">Delete</button>
+					`;
+					dropdown.appendChild(item);
+				});
+			});
+	}
+
+	function deleteMessage(id) {
+		fetch(`/api/delete-message/${id}/`, {
+			method: "DELETE",
+			headers: {
+				"X-CSRFToken": getCookie("csrftoken")
+			}
+		}).then(() => loadNotifications());
+	}
+
+	// Загружаем количество непрочитанных
+	fetch("/api/unread-messages/")
+		.then(response => response.json())
+		.then(data => {
+			if (data.unread_count > 0) {
+				notificationCount.textContent = data.unread_count;
+				notificationCount.style.display = "inline-block";
+			} else {
+				notificationCount.style.display = "none";
+			}
+		});
+
+	// Обработка клика по колокольчику
+	notificationBtn.addEventListener("click", function (e) {
+		e.preventDefault();
+		dropdown.classList.toggle("active");
+		loadNotifications();
+
+		fetch("/api/mark-messages-read/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": getCookie("csrftoken"),
+			},
+		}).then(() => {
+			notificationCount.style.display = "none";
+		});
+	});
+
+	window.deleteMessage = deleteMessage;
+});
+	</script>	
+</body>
+</html>

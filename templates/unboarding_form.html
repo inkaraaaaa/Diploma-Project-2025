@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGO - Onboarding Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            outline: none;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --body-bg-color: #e5ecef;
+            --theme-bg-color: #fafafb;
+            --body-color: #2f2f33;
+            --active-color: #9B5DE5;
+            --header-bg-color: #fff;
+            --border-color: #d8d8d8;
+            --subtitle-color: #83838e;
+        }
+
+        body {
+            background-color: var(--body-bg-color);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 24px;
+            color: var(--active-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #718096;
+            margin-bottom: 25px;
+        }
+
+        .step-progress {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #E0E0E0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        .step-circle.active {
+            background-color: var(--active-color);
+        }
+
+        .step-circle.completed {
+            background-color: #8a4bd0;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            width: 800px;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            width: 48%;
+        }
+
+        .image-section {
+            background-image: url('/static/images/fire.svg');
+            background-size: cover;
+            border-radius: 16px;
+            width: 48%;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="file"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--active-color);
+            box-shadow: 0 0 0 3px rgba(155, 93, 229, 0.2);
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--active-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            background-color: #8a4bd0;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                width: 95%;
+                flex-direction: column;
+            }
+
+            .form-section, .image-section {
+                width: 100%;
+            }
+
+            .image-section {
+                height: 200px;
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-section">
+        <div class="logo">InternGO</div>
+        <h1>Getting Started</h1>
+        <p class="step-description">Fill in your basic information to begin the application process.</p>
+
+        <div class="step-progress">
+            <div class="step-circle active">1</div>
+            <div class="step-circle">2</div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'unboarding_form_submit' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Enter your username">
+
+            <label>Course</label>
+            <input type="text" name="university_course" placeholder="Your university course">
+
+            <label>City</label>
+            <input type="text" name="city" placeholder="Your city">
+
+            <label>Phone number</label>
+            <input type="text" name="phone_number" placeholder="Your phone number">
+
+            <label>Birthday</label>
+            <input type="date" name="birthday">
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-arrow-right"></i>
+                Next Step
+            </button>
+        </form>
+    </div>
+    <div class="image-section"></div>
+</div>
+</body>
+</html>

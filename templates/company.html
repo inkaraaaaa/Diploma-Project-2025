@@ -1,0 +1,288 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGO - Company</title>
+    <link rel="stylesheet" href="/static/css/company.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">InternGo</div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="header-menu">
+        <a href="{% url 'home-after' %}" >Home</a>
+        <a href="{% url 'vacancies' %}" class="active">Vacancies</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+            {% csrf_token %}
+          </form>
+          
+          <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+        <a href="{% url 'user_profile' request.user.username %}"  >
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+
+<main>
+    <div class="cont">
+        <div class="headir">
+            {% if company.logo %}
+            <img src="{{ company.logo.url }}" alt="{{ company.name }} Logo" class="logocompany">
+            {% else %}
+            <div class="logocompany">
+                <i class="fas fa-building"></i>
+            </div>
+            {% endif %}
+
+            <div>
+                <h1>{{ company.name }}</h1>
+                <p><i class="fas fa-map-marker-alt"></i> Almaty </p>
+            </div>
+        </div>
+
+        <p style="font-size: 18px; color: var(--text-medium); margin-bottom: 30px; line-height: 1.7;">
+            Find out more about career opportunities at {{ company.name }} and share your thoughts with us!
+        </p>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="overview">
+                Overview
+            </button>
+            <button class="tab-button" data-tab="partnership">
+                 Partnership
+            </button>
+            <button class="tab-button" data-tab="reviews">
+                 Reviews
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="overview" class="tab-content active">
+            <div class="section">
+                <p class="title"><i class="fas fa-info-circle"></i> Company Overview</p>
+                <p>{{ company.overview }}</p>
+            </div>
+        </div>
+
+        <div id="partnership" class="tab-content">
+            <div class="section">
+                <p class="title"><i class="fas fa-handshake"></i> Partnership Details</p>
+                <p>{{ company.partnership }}</p>
+            </div>
+        </div>
+
+        <div id="reviews" class="tab-content">
+            <section class="reviews-container">
+                <h2><i class="fas fa-star"></i> User Reviews</h2>
+                <div class="reviews">
+                    {% if comments %}
+                    {% for comment in comments %}
+                    <div class="review-card">
+                        {% if comment.user.profile_photo %}
+                        <img src="{{ comment.user.profile_photo.url }}" alt="Profile Photo" class="user-avatar">
+                        {% else %}
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                        <div class="review-content">
+                            <p class="user-name">
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                                {% if comment.internship and comment.internship.position %}
+                                • {{ comment.internship.position }}
+                                {% endif %}
+                            </p>
+
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= comment.rating %}
+                                        <i class="fas fa-star" style="color: #fbbf24;"></i>
+                                    {% else %}
+                                        <i class="far fa-star" style="color: #e2e8f0;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="review-text">{{ comment.text }}</p>
+                            <p class="review-date"><i class="far fa-clock"></i> {{ comment.created_at }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div style="text-align: center; padding: 30px; color: var(--text-light);">
+                        <i class="far fa-comment-dots" style="font-size: 40px; margin-bottom: 15px;"></i>
+                        <p>No reviews yet. Be the first to share your experience!</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Comment Form -->
+                <div class="comment-box">
+                    <div class="comment-header">
+                        {% if request.user.profile_photo %}
+                        <img src="{{ request.user.profile_photo.url }}" alt="Your Photo" class="user-avatarcom">
+                        {% else %}
+                        <div class="user-avatarcom">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {% endif %}
+                        <div class="rating" id="rating-stars">
+                            <i class="fas fa-star star" data-value="1"></i>
+                            <i class="fas fa-star star" data-value="2"></i>
+                            <i class="fas fa-star star" data-value="3"></i>
+                            <i class="fas fa-star star" data-value="4"></i>
+                            <i class="fas fa-star star" data-value="5"></i>
+                        </div>
+                    </div>
+                    <textarea id="comment-input" placeholder="Share your experience with this company..."></textarea>
+                    <button class="send-button" id="send-comment"><i class="fas fa-paper-plane"></i> Post Review</button>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container footer-container">
+        <div class="footer-info">
+            <h2>InternGO</h2>
+            <p>InternGO - It is a platform for helping students.</p>
+        </div>
+        <div class="footer-links">
+            <h3>How it works</h3>
+            <p>Students</p>
+            <p>Companies</p>
+            <p>Career Center</p>
+        </div>
+        <div class="footer-links">
+            <h3>Platform</h3>
+            <p>Vacancies</p>
+            <p>Search</p>
+            <p>Profile</p>
+        </div>
+        <div class="footer-contact">
+            <h3>Support</h3>
+            <p>Call-center: <a href="tel:87470777777">8-747-077-77-77</a></p>
+            <p>Email: <a href="mailto:support@stu.sdu.edu.kz">support@stu.sdu.edu.kz</a></p>
+            <p>Address: Almaty, Kaskelen, Abylaikhan 1/1</p>
+        </div>
+    </div>
+
+</footer>
+
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    // Tab functionality
+    document.addEventListener("DOMContentLoaded", () => {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove("active"));
+                tabContents.forEach(content => content.classList.remove("active"));
+
+                // Add active class to clicked button
+                button.classList.add("active");
+
+                // Show corresponding content
+                const tabId = button.getAttribute("data-tab");
+                document.getElementById(tabId).classList.add("active");
+            });
+        });
+
+        // Star rating functionality
+        const stars = document.querySelectorAll(".comment-box .star");
+        const commentInput = document.getElementById("comment-input");
+        const sendButton = document.getElementById("send-comment");
+        let selectedRating = 0;
+
+        // Star rating functionality
+        stars.forEach(star => {
+            star.addEventListener("click", function() {
+                const value = parseInt(this.getAttribute("data-value"));
+                selectedRating = value;
+
+                // Update star display
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.classList.add("active");
+                        s.classList.remove("far");
+                        s.classList.add("fas");
+                    } else {
+                        s.classList.remove("active");
+                        s.classList.remove("fas");
+                        s.classList.add("far");
+                    }
+                });
+            });
+
+            // Hover effects
+            star.addEventListener("mouseover", function() {
+                const value = parseInt(this.getAttribute("data-value"));
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.style.color = "#fbbf24";
+                    }
+                });
+            });
+
+            star.addEventListener("mouseout", function() {
+                stars.forEach(s => {
+                    if (!s.classList.contains("active")) {
+                        s.style.color = "#e2e8f0";
+                    }
+                });
+            });
+        });
+
+        // Send comment functionality
+        const csrfToken = '{{ csrf_token }}';
+        sendButton.addEventListener("click", () => {
+            const commentText = commentInput.value.trim();
+            if (commentText === "" || selectedRating === 0) {
+                alert("Please enter a review and select a rating.");
+                return;
+            }
+
+            fetch(window.location.pathname + "add_comment/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken
+                },
+                body: `text=${encodeURIComponent(commentText)}&rating=${selectedRating}`
+            })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.error || "An error occurred. Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred. Please try again.");
+                    });
+        });
+    });
+
+    function toggleMenu() {
+        const menu = document.querySelector('.header-menu');
+        menu.classList.toggle('active');
+    }
+</script>
+
+</body>
+</html>

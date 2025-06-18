@@ -1,0 +1,405 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ internship.title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/hr_vacancies.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">HR Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'hr_vacancies' %}">Vacancies</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Candidates</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'hr_profile' %}">My Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="vacancy-details-card">
+      <h2 class="vacancy-details-title">{{ internship.title }}</h2>
+      <div class="mb-4">
+        <span class="badge bg-primary me-2">{{ internship.get_status_display }}</span>
+        <span class="text-muted">Deadline: {{ internship.deadline|date:"m/d/Y" }}</span>
+      </div>
+
+      <h5 class="section-title">Job Description</h5>
+      <p>{{ internship.description }}</p>
+
+      <h5 class="section-title">Requirements</h5>
+      <ul>
+        {% for req in internship.requirements_list %}
+          <li>{{ req }}</li>
+        {% endfor %}
+      </ul>
+
+      <h5 class="section-title">Conditions</h5>
+      <ul>
+        {% for cond in internship.conditions_list %}
+          <li>{{ cond }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <h3 class="mb-4">Candidates ({{ applications.count }})</h3>
+    <div class="table-responsive mb-5">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>University</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+          <tr>
+            <td>
+              {% if app.student.profile_photo %}
+                <img src="{{ app.student.profile_photo.url }}" class="rounded-circle" width="40" height="40" alt="Photo">
+              {% else %}
+                <img src="{% static 'img/default-avatar.png' %}" class="rounded-circle" width="40" height="40" alt="No photo">
+              {% endif %}
+            </td>
+            <td>{{ app.student.first_name }} {{ app.student.last_name }}</td>
+            <td>{{ app.student.university }}</td>
+            <td>
+              {% if app.rejected %}
+                <span class="student-status-rejected">Rejected</span>
+              {% elif app.invited_to_interview %}
+                <span class="student-status-accepted">Invited</span>
+              {% else %}
+                <span class="student-status-new">New</span>
+              {% endif %}
+            </td>
+            <td>
+              <!-- Accept Button -->
+<button class="btn btn-sm btn-success me-2 accept-btn"
+        data-app-id="{{ app.id }}"
+        {% if app.accepted or app.rejected %}disabled{% endif %}>
+  <i class="fas fa-check"></i> Accept
+</button>
+
+<!-- Reject Button -->
+<button class="btn btn-sm btn-danger me-2 reject-btn"
+        data-app-id="{{ app.id }}"
+        {% if app.accepted or app.rejected %}disabled{% endif %}>
+  <i class="fas fa-times"></i> Reject
+</button>
+
+<!-- Interview Button -->
+<button class="btn btn-sm btn-primary me-2 interview-btn"
+        data-bs-toggle="modal" data-bs-target="#interviewModal"
+        data-app-id="{{ app.id }}"
+        {% if app.accepted or app.rejected or app.interview_date %}disabled{% endif %}>
+  <i class="fas fa-calendar-alt"></i> Interview
+</button>
+
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#studentModal{{ app.id }}">
+                <i class="fas fa-info-circle"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Student Info Modal -->
+          <div class="modal fade" id="studentModal{{ app.id }}" tabindex="-1" aria-labelledby="studentModalLabel{{ app.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content p-4">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title" id="studentModalLabel{{ app.id }}">Candidate Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="d-flex align-items-center mb-4">
+                    {% if app.student.profile_photo %}
+                      <img src="{{ app.student.profile_photo.url }}" alt="Profile Photo" class="rounded-circle me-3" width="60" height="60">
+                    {% else %}
+                      <div class="rounded-circle bg-secondary me-3" style="width: 60px; height: 60px;"></div>
+                    {% endif %}
+                    <div>
+                      <h5 class="mb-0">{{ app.student.first_name }} {{ app.student.last_name }}</h5>
+                      {% with app.student.get_cv as cv %}
+  {% if cv %}
+    <a href="{{ cv.upload.url }}" target="_blank">
+      <img src="{% static 'icons/document.svg' %}" alt="CV" width="24" height="24">
+    </a>
+  {% endif %}
+{% endwith %}
+
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-2"><strong>University:</strong> {{ app.student.university }}</div>
+                    <div class="col-md-6 mb-2"><strong>Course:</strong> {{ app.student.university_course }}</div>
+                    <div class="col-md-6 mb-2"><strong>City:</strong> {{ app.student.city }}</div>
+                    <div class="col-md-6 mb-2"><strong>Phone:</strong> {{ app.student.phone_number }}</div>
+                    <div class="col-md-6 mb-2"><strong>Email:</strong> {{ app.student.email }}</div>
+                    <div class="col-md-6 mb-2"><strong>Age:</strong> {{ app.student.age }}</div>
+                    <div class="col-md-6 mb-2"><strong>Position:</strong> {{ app.student.position }}</div>
+                    <div class="col-md-6 mb-2">
+                      <strong>CV:</strong>
+                      <a href="{% url 'hr_download_cv' app.student.id %}" target="_blank">
+                        <img src="{% static 'icons/document.svg' %}" alt="Download CV" width="24" height="24">
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                    <h6>Skills</h6>
+                    <ul>
+                      {% for skill in app.student.skills.all %}
+                        <li>{{ skill.name }}</li>
+                      {% empty %}
+                        <li>No skills listed</li>
+                      {% endfor %}
+                    </ul>
+
+                    <h6>Languages</h6>
+                    <ul>
+                      {% for lang in app.student.languages.all %}
+                        <li>{{ lang.name }}</li>
+                      {% empty %}
+                        <li>No languages listed</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Interview Modal -->
+   <div id="interview-alert" class="alert alert-success position-fixed top-0 end-0 m-4 shadow d-none z-3" role="alert" style="width: 300px;">
+  Invitation for interview sent
+  </div>
+  <div class="modal fade" id="interviewModal" tabindex="-1" aria-labelledby="interviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="interviewModalLabel">Schedule Interview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="interviewForm">
+          <div class="modal-body">
+            <input type="hidden" name="app_id" id="interviewAppId">
+            <div class="mb-3">
+              <label for="interviewDate" class="form-label">Date</label>
+              <input type="date" class="form-control" name="date" id="interviewDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="interviewTime" class="form-label">Time</label>
+              <input type="time" class="form-control" name="time" id="interviewTime" required>
+            </div>
+            <div class="mb-3">
+              <label for="interviewFormat" class="form-label">Format</label>
+              <select class="form-select" name="format" id="interviewFormat">
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="interviewLocation" class="form-label">Location / Link</label>
+              <input type="text" class="form-control" name="location" id="interviewLocation" required>
+            </div>
+            <div class="mb-3">
+              <label for="interviewPhone" class="form-label">Phone</label>
+              <input type="tel" class="form-control" name="phone" id="interviewPhone" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="submit" class="btn btn-primary w-100">Schedule Interview</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accept Comment Modal -->
+<div class="modal fade" id="acceptModal" tabindex="-1" aria-labelledby="acceptModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">HR Comment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="acceptForm">
+        <div class="modal-body">
+          <input type="hidden" name="app_id" id="acceptAppId">
+          <div class="mb-3">
+            <label for="hrComment" class="form-label">Comment</label>
+            <textarea class="form-control" id="hrComment" name="comment" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-success w-100">Send Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Scripts -->
+  <script>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const trimmed = cookie.trim();
+      if (trimmed.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function showSuccessMessage(message) {
+  const alertBox = document.getElementById('interview-alert');
+  alertBox.textContent = message;
+  alertBox.classList.remove('d-none');
+  setTimeout(() => {
+    alertBox.classList.add('d-none');
+  }, 3000);
+}
+
+// Обработка кнопок "Reject"
+document.querySelectorAll('.reject-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const appId = this.getAttribute('data-app-id');
+    fetch('/hr/reject-application/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({ app_id: appId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showSuccessMessage("Заявка отклонена");
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        alert('Ошибка: ' + data.message);
+      }
+    });
+  });
+});
+
+// Установка app_id при открытии Interview Modal
+document.querySelectorAll('[data-bs-target="#interviewModal"]').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const appId = this.getAttribute('data-app-id');
+    document.getElementById('interviewAppId').value = appId;
+  });
+});
+
+// Отправка формы интервью
+document.getElementById('interviewForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const appId = document.getElementById('interviewAppId').value;
+  const date = document.getElementById('interviewDate').value;
+  const time = document.getElementById('interviewTime').value;
+  const format = document.getElementById('interviewFormat').value;
+  const location = document.getElementById('interviewLocation').value;
+  const phone = document.getElementById('interviewPhone').value;
+
+  fetch('/hr/save-interview/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({
+      app_id: appId,
+      date: date,
+      time: time,
+      format: format,
+      location: location,
+      phone: phone
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // Закрываем модалку
+      const modal = bootstrap.Modal.getInstance(document.getElementById('interviewModal'));
+      if (modal) modal.hide();
+
+      // Показываем сообщение
+      showSuccessMessage("Приглашение на интервью отправлено");
+
+      // Обновляем страницу через 1 секунду
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      alert('Ошибка: ' + data.message);
+    }
+  });
+});
+
+// Открытие модалки accept
+  document.querySelectorAll('.accept-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const appId = this.getAttribute('data-app-id');
+      document.getElementById('acceptAppId').value = appId;
+      const acceptModal = new bootstrap.Modal(document.getElementById('acceptModal'));
+      acceptModal.show();
+    });
+  });
+
+  // Отправка формы Accept
+  document.getElementById('acceptForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const appId = document.getElementById('acceptAppId').value;
+    const comment = document.getElementById('hrComment').value;
+
+    fetch('/hr/accept-application/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({
+        app_id: appId,
+        comment: comment
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        alert('Message sent.');
+        location.reload();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    });
+  });
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

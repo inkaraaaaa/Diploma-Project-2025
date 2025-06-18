@@ -1,0 +1,82 @@
+@font-face {
+    font-family: 'Gilroy-Regular';
+    src: url('/static/fonts/Gilroy-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gilroy-SemiBold';
+    src: url('/static/fonts/Gilroy-SemiBold.ttf') format('truetype');
+    font-style: normal;
+}
+
+:root {
+    /* border colors*/
+    --border-base-default: #D9D9D9;
+    --border-base-secondary: #757575;
+    --border-base-tertiary: #383838;
+    --border-danger-default: #900B09;
+    --border-danger-secondary: #C00F0C;
+
+    /* background colors*/
+    --background-base-default: #F5F5F5;
+    --background-base-secondary: #FFFFFF;
+    --background-base-tertiary: #FAF5FF;
+    --background-cards-color: #1F1E25;
+
+    /* text colors*/
+    --text-basic-default: #1E1E1E;
+    --text-basic-secondary: #757575;
+    --text-basic-tertiary: #B3B3B3;
+    --text-basic-wh: #FFFFFF;
+    --text-basic-bl: #000000;
+    --text-link: #4ECDC4;
+
+    --primary-color: #9B5DE5;
+
+
+    /* fonts - HEADINGS */
+    --font-heading-1: "Gilroy-SemiBold", sans-serif;
+    --font-size-heading-1: 48px;
+
+    --font-heading-2: "Gilroy-SemiBold", sans-serif;
+    --font-size-heading-2: 36px;
+
+    --font-heading-3: "Gilroy-SemiBold", sans-serif;
+    --font-size-heading-3: 24px;
+
+    --font-heading-5: "Gilroy-SemiBold", sans-serif;
+    --font-size-heading-5: 20px;
+
+    /*font Body text normal*/
+    --font-text-lg-normal: "Gilroy-Regular";
+
+    --font-text-base-normal: 'Gilroy-Regular', sans-serif;
+
+    --font-text-sm-normal: "Gilroy-Regular", sans-serif;
+
+    --font-text-xs-normal: "Gilroy-Regular", sans-serif;
+
+
+    /*font Body text semibold*/
+    --font-text-lg-semibold: "Gilroy-SemiBold", sans-serif;
+
+    --font-text-base-semibold: "Gilroy-SemiBold", sans-serif;
+
+    --font-text-sm-semibold: "Gilroy-SemiBold", sans-serif;
+
+    --font-text-xs-semibold: "Gilroy-SemiBold", sans-serif;
+
+
+
+    --letter-spacing: 0%;
+
+
+    /* font-size*/
+    --font-size-lg: 18px;
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+    --font-size-xs: 12px;
+
+}

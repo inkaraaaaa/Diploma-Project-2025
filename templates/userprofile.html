@@ -1,0 +1,452 @@
+
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - InternGo</title>
+    <link rel="stylesheet" href="{% static 'css/userprofile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="header">
+    <div class="logo">InternGo</div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="header-menu">
+        <a href="{% url 'home-after' %}">Home</a>
+        <a href="{% url 'vacancies' %}">Vacancies</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+            {% csrf_token %}
+          </form>
+          
+          <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+        <a href="#"class="active" >
+            <i class="fas fa-user"></i>
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <h1 class="page-title">Account</h1>
+        <div class="header-actions">
+            <button id="notificationBtn" class="icon-button">
+                <i class="fas fa-bell"></i>
+                <span id="notification-count" class="badge bg-danger" style="display: none;">0</span>
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+            <div class="notification-scroll">
+                <ul id="notificationList">
+            <!-- уведомления -->
+                    <li>Thank you for your interest in the position Software Engineer - Java at 'SDU University'. Unfortunately, your application was not successful this time.</li>
+                    <li>Thank you for your interest in the position 'Backend Engineer (Python/Django)' at 'SDU University' Unfortunately, your application was not successful this time.</li>
+                    <li>"Company"SDU University" invites you to the position "Frontend Intern (React.js)". Interview details: 2025-06-05 at 12:00, Format: Online</li>
+            <!-- добавь больше для проверки скролла -->
+                </ul>
+            </div>
+             <div class="dropdown-footer">
+                <a href="{% url 'student_applications' %}" class="view-all-button">View All</a>
+             </div>
+            </div>
+
+            <button class="icon-button" onclick="openSettingsModal()">
+                <i class="fas fa-cog"></i>
+            </button>
+
+            <!-- Модальное окно -->
+            <div id="settingsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSettingsModal()">&times;</span>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <div style="display: inline-flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+
+                            <form method="post" action="{% url 'delete_profile' %}"
+                                  onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');"
+                                  style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="button danger action-button">
+                                    <i class="fas fa-trash" style="margin-right: 8px;"></i> Delete Profile
+                                </button>
+                            </form>
+
+                            <a href="{% url 'change_password' %}" class="button outline action-button">
+                                <i class="fas fa-key" style="margin-right: 8px;"></i> Change Password
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="dashboard">
+        <div class="card">
+            <h2 class="card-title">About Me</h2>
+            <div class="profile-section">
+                <div class="profile-photo-container">
+                    {% if user.profile_photo %}
+                    <img src="{{ user.profile_photo.url }}" alt="Profile Photo" class="profile-photo" width="150" height="150">
+                    <div class="edit-photo-overlay" onclick="openPhotoModal()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    {% else %}
+                    <img src="/media/profile_photos/avatar.png" alt="Default Profile Photo" class="profile-photo" width="150" height="150">
+                    <div class="edit-photo-overlay" onclick="openPhotoModal()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <h3 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h3>
+
+                <div class="about-me-display">
+                    <div class="profile-item"><i class="fas fa-briefcase"></i><span> {{ user.position }}</span></div>
+                    <div class="profile-item"><i class="fas fa-graduation-cap"></i><span>SDU, {{ user.university_course }} year</span></div>
+                    <div class="profile-item"><i class="fas fa-map-marker-alt"></i><span>Kazakhstan, {{ user.city }}</span></div>
+                    <div class="profile-item"><i class="fas fa-envelope"></i><span>{{ user.email }}</span></div>
+                </div>
+
+                <form class="about-me-form" style="display:none;" method="post" action="{% url 'update_about_me' %}">
+                    {% csrf_token %}
+                    <input type="text" name="position" value="{{ user.position }}" placeholder="Your position (e.g., UX/UI Designer)">
+                    <input type="number" name="university_course" value="{{ user.university_course }}" placeholder="University course (e.g., 4)">
+                    <input type="text" name="city" value="{{ user.city }}" placeholder="City (e.g., Almaty)">
+                    <input type="email" name="email" value="{{ user.email }}" placeholder="Email (e.g., example@email.com)">
+                    <div class="buttons-group">
+                        <button type="submit" class="button primary">Save</button>
+                        <button type="button" class="button outline" onclick="toggleAboutEdit()">Cancel</button>
+                    </div>
+                </form>
+
+                <div class="buttons-group" style="margin-top: 24px;">
+                    <a href="#" class="button outline" onclick="toggleAboutEdit()"><i class="fas fa-cog"></i> Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Account Information</h2>
+
+            <div class="account-info-display">
+                <div class="profile-item"><strong>First Name:</strong> <span>{{ user.first_name }}</span></div>
+                <div class="profile-item"><strong>Last Name:</strong> <span>{{ user.last_name }}</span></div>
+                <div class="profile-item"><strong>Birthday:</strong> <span>{{ user.birthday }}</span></div>
+                <div class="profile-item"><strong>City:</strong> <span>{{ user.city }}</span></div>
+                <div class="profile-item"><strong>Phone:</strong> <span>{{ user.phone_number }}</span></div>
+                <div class="profile-item"><strong>Email:</strong> <span>{{ user.email }}</span></div>
+            </div>
+
+            <form class="account-info-form" style="display:none;" method="post" action="{% url 'edit_profile' %}">
+                {% csrf_token %}
+                <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name">
+                <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Last Name">
+                <input type="date" name="birthday" value="{{ user.birthday|date:'Y-m-d' }}" placeholder="Birthday">
+                <input type="text" name="city" value="{{ user.city }}" placeholder="City">
+                <input type="text" name="phone_number" value="{{ user.phone_number }}" placeholder="Phone">
+                <input type="email" name="email" value="{{ user.email }}" placeholder="Email">
+                <div class="buttons-group" style="margin-top: 16px;">
+                    <button type="submit" class="button primary">Save</button>
+                    <button type="button" class="button outline" onclick="toggleAccountEdit()">Cancel</button>
+                </div>
+            </form>
+
+            <div class="buttons-group" style="margin-top: 24px;">
+                <button class="button outline" onclick="toggleAccountEdit()"><i class="fas fa-cog"></i> Edit Information</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="resume-section">
+                <h2 class="card-title">Resume</h2>
+                <p class="resume-subtitle">Create or upload your resume to apply for internships</p>
+
+                <div class="buttons-group">
+                    <a href="{% url 'create_resume' %}" class="button primary">
+                        <i class="fas fa-file-alt"></i> Create Resume</a>
+                    <a href="#" class="button secondary" onclick="toggleUploadForm()">
+                        <i class="fas fa-upload"></i> Upload Resume
+                    </a>
+                </div>
+
+                <div class="upload-form" style="display: none;">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'user_profile' user.username %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Upload Document</button>
+                    </form>
+                </div>
+
+
+                {% if success_message %}
+                    <div class="alert alert-success">
+                        {{ success_message }}
+                    </div>
+                {% endif %}
+
+                <h3>Your Document</h3>
+                <ul>
+                    {% if documents %}
+                        {% with last_document=documents.last %}
+                            <li>
+                                <a href="{% url 'view_pdf' doc_id=last_document.id %}">{{ last_document.title }}</a>
+                            </li>
+                        {% endwith %}
+                    {% else %}
+                        <p>No documents uploaded yet.</p>
+                    {% endif %}
+                </ul>
+
+
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Social Networks</h2>
+
+                <div class="social-networks-display">
+                    <div class="profile-item">
+                        <strong>LinkedIn:</strong>
+                        {% if user.linkedin %}
+                            <a href="{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                    <div class="profile-item">
+                        <strong>Twitter:</strong>
+                        {% if user.twitter %}
+                            <a href="{{ user.twitter }}" target="_blank">{{ user.twitter }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                    <div class="profile-item">
+                        <strong>Facebook:</strong>
+                        {% if user.facebook %}
+                            <a href="{{ user.facebook }}" target="_blank">{{ user.facebook }}</a>
+                        {% else %}
+                            <span>Not provided</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form class="social-networks-form" style="display:none;" method="post" action="{% url 'edit_social_networks' %}">
+                    {% csrf_token %}
+                    <input type="url" name="linkedin" placeholder="LinkedIn URL" value="{{ user.linkedin }}">
+                    <input type="url" name="twitter" placeholder="Twitter URL" value="{{ user.twitter }}">
+                    <input type="url" name="facebook" placeholder="Facebook URL" value="{{ user.facebook }}">
+                    <div class="buttons-group" style="margin-top: 16px;">
+                        <button type="submit" class="button primary">Save</button>
+                        <button type="button" class="button outline" onclick="toggleSocialEdit()">Cancel</button>
+                    </div>
+                </form>
+
+                <div class="buttons-group" style="margin-top: 24px;">
+                    <button class="button outline" onclick="toggleSocialEdit()"><i class="fas fa-cog"></i> Edit Information</button>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+</div>
+
+
+<div id="photo-upload-modal" class="photo-upload-modal">
+    {% csrf_token %}
+    <div class="modal-content">
+        <span class="close-modal" onclick="closePhotoModal()">&times;</span>
+        <h2>Update Profile Photo</h2>
+        <div class="file-upload-container">
+            <label for="photo-file-input" class="file-input-label"><i class="fas fa-upload"></i> Choose Photo</label>
+            <input type="file" id="photo-file-input" accept="image/*" onchange="previewPhoto(event)">
+            <p>Recommended: square image, at least 300x300 pixels</p>
+        </div>
+
+        <div id="preview-container" class="preview-container">
+            <img id="preview-image" class="preview-image" src="" alt="Preview">
+        </div>
+
+        <div class="upload-actions">
+            <button class="button outline" onclick="closePhotoModal()">Cancel</button>
+            <button class="button primary" onclick="uploadPhoto()">Save Photo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function toggleMenu() {
+        const menu = document.querySelector('.header-menu');
+        menu.classList.toggle('active');
+    }
+
+document.addEventListener('DOMContentLoaded', () => {
+        // Уведомления
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationCount = document.getElementById('notification-count');
+
+        if (notificationBtn && notificationDropdown) {
+            notificationBtn.addEventListener('click', () => {
+                notificationDropdown.style.display =
+                    notificationDropdown.style.display === 'none' ? 'block' : 'none';
+                fetchNotifications();
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!notificationDropdown.contains(event.target) && !notificationBtn.contains(event.target)) {
+                    notificationDropdown.style.display = 'none';
+                }
+            });
+
+            updateUnreadCount();
+            setInterval(updateUnreadCount, 60000); // обновлять каждые 60 секунд
+        }
+
+        function updateUnreadCount() {
+            fetch('/userprofile//unread-count/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        notificationCount.style.display = 'inline-block';
+                        notificationCount.textContent = data.count;
+                    } else {
+                        notificationCount.style.display = 'none';
+                    }
+                });
+        }
+
+        function fetchNotifications() {
+    fetch('/userprofile/get-notifications/')
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('notificationList');
+            list.innerHTML = '';
+            if (data.length > 0) {
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item.message;
+                    list.appendChild(li);
+                });
+            } else {
+                list.innerHTML = '<li>No notifications</li>';
+            }
+        })
+        .catch(err => console.error('Fetch error:', err));
+}
+
+
+        // Редактировать "О себе"
+        window.toggleAboutEdit = function() {
+            const display = document.querySelector('.about-me-display');
+            const form = document.querySelector('.about-me-form');
+            if (display && form) {
+                display.style.display = display.style.display === 'none' ? 'block' : 'none';
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+    window.toggleUploadForm = function () {
+        const uploadForm = document.querySelector('.upload-form');
+        if (!uploadForm) {
+            console.warn('Upload form not found!');
+            return;
+        }
+        uploadForm.style.display = (uploadForm.style.display === 'none' || uploadForm.style.display === '')
+            ? 'block'
+            : 'none';
+    };
+
+
+    // Редактировать "Аккаунт"
+        window.toggleAccountEdit = function() {
+            const display = document.querySelector('.account-info-display');
+            const form = document.querySelector('.account-info-form');
+            if (display && form) {
+                display.style.display = display.style.display === 'none' ? 'block' : 'none';
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        window.toggleSocialEdit = function () {
+            const display = document.querySelector('.social-networks-display');
+            const form = document.querySelector('.social-networks-form');
+
+            if (display && form) {
+                const isFormVisible = form.style.display === 'block';
+                display.style.display = isFormVisible ? 'block' : 'none';
+                form.style.display = isFormVisible ? 'none' : 'block';
+            } else {
+                console.warn('Missing elements for social edit:', { display, form });
+            }
+        };
+
+
+        // Открытие/закрытие модалки с настройками
+        window.openSettingsModal = function() {
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        window.closeSettingsModal = function() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Открытие/закрытие модалки фото
+        window.openPhotoModal = function() {
+            document.querySelector('.photo-upload-modal').style.display = 'block';
+        }
+
+        window.closePhotoModal = function() {
+            document.querySelector('.photo-upload-modal').style.display = 'none';
+        }
+
+        // Загрузка фото
+        window.uploadPhoto = function() {
+            const fileInput = document.getElementById('photo-file-input');
+            const file = fileInput?.files[0];
+
+            if (!file) return alert('Please select a photo first');
+            if (!file.type.match('image.*')) return alert('Only image files are allowed');
+            if (file.size > 5 * 1024 * 1024) return alert('File size must be less than 5MB');
+
+            const formData = new FormData();
+            formData.append('photo', file);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+            const saveBtn = document.querySelector('.photo-upload-modal .button.primary');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            saveBtn.disabled = true;
+
+            fetch('/upload-profile-photo/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrfToken }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const profilePhoto = document.querySelector('.profile-photo');
+                        profilePhoto.src = data.photo_url + '?t=' + new Date().getTime(); // обход кэша
+                        closePhotoModal();
+                        alert('Profile photo updated successfully!');
+                    } else {
+                        throw new Error(data.message || 'Upload error');
+                    }
+                })
+                .catch(error => {
+                    alert('Error uploading photo: ' + error.message);
+                })
+                .finally(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                });
+        }
+    });
+</script>
+
+
+</body>
+</html>

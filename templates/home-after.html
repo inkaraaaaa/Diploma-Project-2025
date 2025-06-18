@@ -1,0 +1,313 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGO - Home-after</title>
+    <link rel="stylesheet" href="{% static 'css/home-after.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <div class="header">
+        <div class="logo">InternGo</div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div class="header-menu">
+            <a href="{% url 'home-after' %}" class="active">Home</a>
+            <a href="{% url 'vacancies' %}">Vacancies</a>
+            <a href="{% url 'faq' %}">FAQ</a>
+            {% if user.is_authenticated %}
+                <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+
+                {% if user.username %}
+                    <a href="{% url 'user_profile' username=user.username %}">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+        </div>
+</header>
+
+<main class="hero">
+    <div class="overlay">
+        <h1 class="hero-title">Platform for students</h1>
+        <button class="resume-btn" onclick="window.location.href='{% url 'create_resume' %}'">Create resume</button>
+    </div>
+</main>
+
+<section class="events-promo-section">
+    <h2 class="section-title">Featured Events</h2>
+    <div class="events-promo-container">
+        {% for event in events|slice:":3" %}
+        <div class="event-mini-card">
+            <div class="event-mini-header">
+                <h3 class="event-mini-title">{{ event.title }}</h3>
+                <p class="event-mini-date"><i class="far fa-calendar-alt"></i> {{ event.date }}</p>
+            </div>
+            <div class="event-mini-body">
+                <p class="event-mini-description">{{ event.description }}</p>
+                <div class="event-highlights">
+                    <div class="highlight-item">
+                        <span class="highlight-icon">🏆</span>
+                        <span>{{ event.prize_info }}</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-icon">👥</span>
+                        <span>{{ event.team_info }}</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-icon">📅</span>
+                        <span>{{ event.registration_deadline }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="event-mini-footer">
+                <span class="event-mini-tag">{{ event.category }}</span>
+                <a href="{% url 'afisha2' event.id %}" class="register-mini-btn">Register</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>Событий пока нет.</p>
+        {% endfor %}
+    </div>
+    <button class="more" onclick="window.location.href='{% url 'events' %}'"><img src="/static/icons/Chevron_Right.svg"  width="25" height="20"></button>
+</section>
+
+
+<h2 class="section-title">Vacancies</h2>
+        <div class="vacancies">
+           {% for job in jobs|slice:":3" %}
+          <div class="vacancy-card">
+        <h3>{{ job.title }}</h3>
+        <p><span class="company">{{ job.company }}</span> · {{ job.location }}</p>
+        <div class="tags">
+            <span>{{ job.job_type }}</span>
+            <span>{{ job.level }}</span>
+            <span>{{ job.course }}</span>
+            <a href="{% url 'job_detail' job.id %}">
+                <span>
+                     <img src="/static/icons/Chevron_Right.svg" alt="right button" width="15" height="10">
+                </span>
+            </a>
+        </div>
+          </div>
+            {% empty %}
+            <p>No job listings available.</p>
+            {% endfor %}
+        </div>
+        <button class="more" onclick="window.location.href='{% url 'vacancies' %}'"><img src="/static/icons/Chevron_Right.svg"  width="25" height="20"></button>
+
+
+        <section class="services">
+            <h2 class="section-title">Services</h2>
+            <div class="service-cards">
+                <div class="service-card">
+                <div class="icon-bg">
+                    <img src="/static/images/travel-dynamic-premium.png" alt="Find Internship">
+                </div>
+                    <h3>Find Interns</h3>
+                    <p>Easily connect with motivated students and fresh graduates ready to contribute to your company. Our platform helps you discover young talent tailored to your industry needs.</p>
+                    <button class="next-btn" onclick="window.location.href='{% url 'hr_register_email' %}'">
+                        <img src="/static/icons/Chevron_Right.svg" alt="Next">
+                    </button>
+                </div>
+        
+                <div class="service-card">
+                    <div class="icon-bg">
+                    <img src="/static/images/file-fav-dynamic-premium.png" alt="Create CV">
+                    </div>
+                    <h3>Create CV</h3>
+                    <p>Build a professional CV in minutes! Use our templates and formatting tools to showcase your education, experience, and skills effectively.</p>
+                    <button class="next-btn" onclick="window.location.href='{% url 'create_resume' %}'">
+                        <img src="/static/icons/Chevron_Right.svg" alt="Next">
+                    </button>
+                </div>
+        
+                <div class="service-card">
+                <div class="icon-bg">
+                    <img src="/static/images/zoom-dynamic-premium.png" alt="Filters">
+                </div>
+                    <h3>Filters</h3>
+                    <p>Refine your search with smart filters—choose your preferred location, industry, duration, and more to find the perfect internship match.</p>
+                    <button class="next-btn" onclick="window.location.href='{% url 'vacancies' %}'">
+                        <img src="/static/icons/Chevron_Right.svg" alt="Next">
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <div class="block6">
+            <h2>Trusted by the Best Companies</h2>
+                <div class="slider-container">
+                    <div class="slider-track">
+                <img src="/static/forhomepage/Logo 3.png" alt="Company 2">
+                <img src="/static/forhomepage/Logo 4.png" alt="Company 3">
+                <img src="/static/forhomepage/Logo 5.png" alt="Company 4">
+                <img src="/static/forhomepage/Logo 6.png" alt="Company 5">
+                <img src="/static/forhomepage/Logo 7.png" alt="Company 6">
+                <img src="/static/forhomepage/Logo 8.png" alt="Company 7">
+                <img src="/static/forhomepage/Logo 2.png" alt="Company 1">
+                <img src="/static/forhomepage/Logo 3.png" alt="Company 2">
+                <img src="/static/forhomepage/Logo 4.png" alt="Company 3">
+                <img src="/static/forhomepage/Logo 5.png" alt="Company 4">
+                <img src="/static/forhomepage/Logo 6.png" alt="Company 5">
+                <img src="/static/forhomepage/Logo 7.png" alt="Company 6">
+                <img src="/static/forhomepage/Logo 8.png" alt="Company 7">
+                <img src="/static/forhomepage/Logo 3.png" alt="Company 2">
+                <img src="/static/forhomepage/Logo 4.png" alt="Company 3">
+                <img src="/static/forhomepage/Logo 5.png" alt="Company 4">
+                <img src="/static/forhomepage/Logo 6.png" alt="Company 5">
+                <img src="/static/forhomepage/Logo 7.png" alt="Company 6">
+                <img src="/static/forhomepage/Logo 8.png" alt="Company 7">
+                <img src="/static/forhomepage/Logo 2.png" alt="Company 1">
+                <img src="/static/forhomepage/Logo 3.png" alt="Company 2">
+                <img src="/static/forhomepage/Logo 4.png" alt="Company 3">
+                <img src="/static/forhomepage/Logo 5.png" alt="Company 4">
+                <img src="/static/forhomepage/Logo 6.png" alt="Company 5">
+                <img src="/static/forhomepage/Logo 7.png" alt="Company 6">
+                <img src="/static/forhomepage/Logo 8.png" alt="Company 7">
+            </div>
+        </div>
+
+            <section class="testimonial">
+            <div class="testimonials-container" id="testimonialsContainer">
+                {% if comments %}
+                {% for comment in comments %}
+                <div class="testimonial-content {% if forloop.first %}active{% endif %}">
+                    <p class="testimonial-text">
+                        {{ comment.text }}
+                    </p>
+                    <div class="testimonial-author">
+                        <img src="/static/images/user1.jpeg" alt="{{ comment.author_name }}">
+                        <div>
+                            <h4>{{ comment.author_name }}</h4>
+                            <p class="author-role">4th year course student</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="testimonial-content empty-testimonial">
+                    <p class="testimonial-text">Нет комментариев</p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if comments.count > 1 %}
+            <div class="indicator-dots" id="indicatorDots">
+                {% for comment in comments %}
+                <div class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
+                {% endfor %}
+            </div>
+
+            <div class="testimonial-nav">
+                <button class="nav-btn" id="prevBtn">&#8592;</button>
+                <button class="nav-btn" id="nextBtn">&#8594;</button>
+            </div>
+            {% endif %}
+        </section>
+            <footer>
+
+                <div class="container footer-container">
+                    <div class="footer-info">
+                        <h2>InternGO</h2>
+                        <p>InternGO - It is a platform for helping students.</p>
+                    </div>
+                    <div class="footer-links">
+                        <h3>How it works</h3>
+                        <p>Students</p>
+                        <p>Companies</p>
+                        <p>Career Center</p>
+                    </div>
+                    <div class="footer-links">
+                        <h3>Platform</h3>
+                        <p>Vacancies</p>
+                        <p>Search</p>
+                        <p>Profile</p>
+                    </div>
+                    <div class="footer-contact">
+                        <h3>Support</h3>
+                        <p>Call-center: <a href="tel:87470777777">8-747-077-77-77</a></p>
+                        <p>Email: <a href="mailto:support@stu.sdu.edu.kz">support@stu.sdu.edu.kz</a></p>
+                        <p>Address: Almaty, Kaskelen, Abylaikhan 1/1</p>
+                    </div>
+                </div>
+
+            </footer>
+
+</body>
+<script>
+    function toggleMenu() {
+        const menu = document.querySelector('.header-menu');
+        menu.classList.toggle('active');
+    }
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const testimonials = document.querySelectorAll('.testimonial-content');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (testimonials.length <= 1) return; // No need for navigation with 0 or 1 testimonial
+
+        let currentIndex = 0;
+
+        // Function to show the current testimonial and hide others
+        function showTestimonial(index) {
+            testimonials.forEach((testimonial, i) => {
+                if (i === index) {
+                    testimonial.classList.add('active');
+                } else {
+                    testimonial.classList.remove('active');
+                }
+            });
+
+            // Update the dots
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        // Add click event to the dots
+        dots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                currentIndex = index;
+                showTestimonial(currentIndex);
+            });
+        });
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+                showTestimonial(currentIndex);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex + 1) % testimonials.length;
+                showTestimonial(currentIndex);
+            });
+        }
+
+
+        showTestimonial(0);
+
+        setInterval(function() {
+            currentIndex = (currentIndex + 1) % testimonials.length;
+            showTestimonial(currentIndex);
+        }, 5000);
+
+    });
+</script>
+</html>

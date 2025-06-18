@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Company Info</title>
+    <link rel="stylesheet" href="/static/css/form.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Step 2: Confirm Company Details</h2>
+        <form method="post">
+            {% csrf_token %}
+            <p><strong>Company Name:</strong> {{ request_obj.company_name }}</p>
+            <p><strong>Email:</strong> {{ request_obj.hr_email }}</p>
+            <p><strong>Overview:</strong> {{ request_obj.overview }}</p>
+            <p><strong>Partnership Info:</strong> {{ request_obj.partnership }}</p>
+            <p><strong>Employee Count:</strong> {{ request_obj.employee_count }}</p>
+            <p><strong>City:</strong> {{ request_obj.city }}</p>
+            <button type="submit">Register Company</button>
+        </form>
+    </div>
+</body>
+</html>

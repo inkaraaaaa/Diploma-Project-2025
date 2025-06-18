@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+*.pyc
+=======
+**/.claude/settings.local.json
+/venv
+*/__pycache__
+**/__pycache__
+***/__pycache__
+****/__pycache__
+>>>>>>> b628a7dde225962e2206d38dc5543c7fc9454fe3

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - InternGO</title>
+    <link rel="stylesheet" href="/static/css/stylesign.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <div class="form-box">
+                <h2>Reset Password</h2>
+                <p>Enter your email</p>
+
+                <form id="reset-password-form" method="post"">
+                    {% csrf_token %}
+                    <div class="input-box">
+                        <label for="email">Email</label>
+                        <input type="text" id="email" name="email" placeholder="Type..."> <!-- 🔹 Добавили name="email" -->
+                        <span class="error-message"></span>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Continue</button>
+                    <div class="bottom-text">
+                        <a href="{% url 'signin' %}">← Back to Log In</a> 
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="image-container">
+                <img src="/static/images/photoformain.png" alt="Abstract Design">
+                <div class="overlay-text">Find Your Internship</div>
+            </div>
+        </div>
+    </div>
+    <!--<script src="script.js">
+    </script>-->
+</body>
+</html>

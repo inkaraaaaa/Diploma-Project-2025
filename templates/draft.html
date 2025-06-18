@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternGO - Vacancies</title>
+    <link rel="stylesheet" href="{% static 'css/vacancies.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<style>
+
+</style>
+<body>
+<script src="{% static 'script/job.js' %}"></script>
+<div class="job">
+    <div class="header">
+        <div class="logo">InternGo</div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <div class="header-menu">
+            <a href="{% url 'home-after' %}" >Home</a>
+            <a href="{% url 'vacancies' %}" class="active">Vacancies</a>
+            <a href="{% url 'faq' %}">FAQ</a>
+            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                {% csrf_token %}
+              </form>
+              
+              <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+            <a href="{% url 'user_profile' request.user.username %}"  >
+                <i class="fas fa-user"></i>
+            </a>
+        </div>
+    </div>
+    <div class="wrapper">
+        <form method="GET" action="{% url 'job_list' %}">
+            <div class="search-menu">
+                <div class="search-bar">
+                    <input type="text" name="title" placeholder="Search job title" value="{{ request.GET.title }}">
+                </div>
+                <div class="search-location">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <input type="text" name="location" placeholder="Location" value="{{ request.GET.location }}">
+                </div>
+
+                <div class="search-job">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-briefcase">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                        <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+                    </svg>
+                    <input type="text" name="job_type" placeholder="Job Type" value="{{ request.GET.job_type }}">
+                </div>
+
+                <div class="search-salary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 19.5A2.25 2.25 0 016.25 21h12a2.25 2.25 0 012.25-2.25v-14A2.25 2.25 0 0018.25 2.5H6.25A2.25 2.25 0 004 4.75v14.75zM9 6.75h6M9 9.75h6M9 12.75h6" />
+                    </svg>
+                    <input type="text" name="course" placeholder="Course" value="{{ request.GET.course }}">
+                </div>
+
+                <button type="submit" class="search-button">Find Job</button>
+            </div>
+        </form>
+
+        <div class="main-container">
+            <div class="search-type">
+                <form method="GET" action="{% url 'job_list' %}">
+                    <div class="company-filter">
+                        <h3>Companies</h3>
+                        {% for company in companies %}
+                        <div class="company-item">
+                            <div class="company-item-left">
+                                <input type="checkbox" name="company" value="{{ company.company__name }}"
+                                       {% if company.company__name in companies_selected %}checked{% endif %}>
+                                <span>{{ company.company__name }}</span>
+                            </div>
+                            <span class="company-count">{{ company.job_count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="search-button">Filter by Companies</button>
+                </form>
+            </div>
+
+            <div class="searched-jobs">
+                <div class="searched-bar">
+                    <div class="searched-show">Showing {{ jobs|length }} Jobs</div>
+                    <div class="searched-sort">Sort by: <span class="post-time">Newest Post </span><span class="menu-icon">▼</span></div>
+                </div>
+                <div class="job-cards">
+                    {% for job in jobs %}
+                    <div class="job-card">
+                        <div class="job-card-title">{{ job.title }}</div>
+                        <div class="job-card-subtitle">{{ job.description }}</div>
+                        <div class="job-detail-buttons">
+                            <button class="search-buttons detail-button">{{ job.job_type }}</button>
+                            <button class="search-buttons detail-button">{{ job.experience_required }}</button>
+                            <button class="search-buttons detail-button">{{ job.level }}</button>
+                        </div>
+                        <div class="job-card-buttons">
+                            <a href="{% url 'job_detail' job.id %}">
+                            <button class="search-buttons card-buttons">Apply Now</button>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

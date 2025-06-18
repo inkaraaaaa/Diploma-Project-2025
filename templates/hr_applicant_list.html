@@ -1,0 +1,414 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Applicants - {{ internship.title }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/hr.css' %}">
+  {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Applicants - {{ internship.title }}</title>
+  <link rel="stylesheet" href="{% static 'css/table.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* === MATERIAL THEME VARIABLES === */
+    :root {
+      --body-font: "Poppins", sans-serif;
+      --active-color: #9B5DE5;
+      --active-light-color: #e1ebfb;
+      --search-border-color: #efefef;
+      --border-color: #d8d8d8;
+      --inactive-color: #f0f0f0;
+      --placeholder-color: #9b9ba5;
+      --primary: #6750A4;
+      --on-primary: #FFFFFF;
+      --primary-container: #EADDFF;
+      --on-primary-container: #21005D;
+      --secondary: #625B71;
+      --on-secondary: #FFFFFF;
+      --secondary-container: #E8DEF8;
+      --on-secondary-container: #1D192B;
+      --tertiary: #7D5260;
+      --on-tertiary: #FFFFFF;
+      --tertiary-container: #FFD8E4;
+      --on-tertiary-container: #31111D;
+      --error: #B3261E;
+      --on-error: #FFFFFF;
+      --error-container: #F9DEDC;
+      --on-error-container: #410E0B;
+      --surface-dim: #DED8E1;
+      --surface: #FFFBFE;
+      --surface-bright: #FFFBFE;
+      --inverse-surface: #322F35;
+      --inverse-on-surface: #F5EFF7;
+      --inverse-primary: #D0BCFF;
+      --surface-container-lowest: #FFFFFF;
+      --surface-container-low: #F7F2FA;
+      --surface-container: #F3EDF7;
+      --surface-container-high: #ECE6F0;
+      --surface-container-highest: #E6E0E9;
+      --on-surface: #1C1B1F;
+      --on-surface-variant: #49454F;
+      --outline: #79747E;
+      --outline-variant: #CAC4D0;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: var(--body-font);
+      background-color: var(--surface);
+      color: var(--on-surface);
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface-container-lowest);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--outline-variant);
+    }
+
+    th {
+      background-color: var(--surface-container);
+      color: var(--on-surface-variant);
+      font-weight: 500;
+    }
+
+    td button {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    td button:hover {
+      background-color: var(--on-primary-container);
+      color: var(--primary);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: var(--surface-container-high);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      min-width: 400px;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .modal-content h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+    }
+
+    .modal-content label {
+      display: block;
+      margin-bottom: 1rem;
+      color: var(--on-surface);
+    }
+
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--outline-variant);
+      background-color: var(--surface-container-low);
+      color: var(--on-surface);
+      margin-top: 0.25rem;
+    }
+
+    .modal-content button {
+      margin-top: 1rem;
+      width: 100%;
+      background-color: var(--primary);
+      color: var(--on-primary);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-content button:hover {
+      background-color: var(--on-primary-container);
+      color: var(--primary);
+    }
+
+    .actions-cell a {
+      margin-right: 0.5rem;
+    }
+
+    .actions-cell img {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .actions-cell img:hover {
+      transform: scale(1.1);
+    }
+
+    .success {
+      background-color: #e0f7ea;
+    }
+
+    .rejected {
+      background-color: #f8d7da;
+    }
+  </style>
+</head>
+<body>
+  <div class="registration-container">
+    <div class="registration-header">
+      <h2>Applicants for: {{ internship.title }}</h2>
+      <p>Manage applicants, schedule interviews, and review details</p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Course</th>
+            <th>Position</th>
+            <th>CV</th>
+            <th>Cover Letter</th>
+            <th>Actions</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for app in applications %}
+          <tr {% if app.invited_to_interview %} class="highlight-row" {% endif %}>
+            <td>{{ app.student.first_name }}</td>
+            <td>{{ app.student.last_name }}</td>
+            <td>{{ app.student.university_course }}</td>
+            <td>{{ app.student.position }}</td>
+            <td>
+              {% with document=app.student.documents.first %}
+                {% if document %}
+                  <a href="{% url 'download_cv' app.student.id %}" download="{{ app.student.first_name }}_{{ app.student.last_name }}.pdf">
+                    <img src="{% static 'icons/document.svg' %}" alt="CV" width="20" height="20">
+                  </a>
+                {% else %}
+                  —
+                {% endif %}
+              {% endwith %}
+            </td>
+            <td>
+              {% if app.cover_letter %}
+                <img src="{% static 'icons/check.svg' %}" alt="Yes">
+              {% else %}
+                <img src="{% static 'icons/cross.svg' %}" alt="No">
+              {% endif %}
+            </td>
+            <td class="actions-cell" data-app-id="{{ app.id }}">
+              {% if app.invited_to_interview %}
+                <img src="{% static 'icons/accepted.svg' %}" alt="Interview Scheduled">
+                <img src="{% static 'icons/cancel.svg' %}" alt="Reject">
+              {% else %}
+                <a href="#" class="open-interview-modal" data-app-id="{{ app.id }}">
+                  <img src="{% static 'icons/interview.svg' %}" alt="Interview">
+                </a>
+                <a href="#" class="cancel-application" data-app-id="{{ app.id }}">
+                  <img src="{% static 'icons/cross.svg' %}" alt="Cancel">
+                </a>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'hr_applicant_detail' app.id %}">
+                <button class="btn-outline-primary">More</button>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="interviewModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Schedule Interview</h3>
+      <form id="interviewForm">
+        <input type="hidden" name="app_id" id="app_id">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input type="time" name="time" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Format</label>
+          <select name="format" class="form-select">
+            <option value="online">Online</option>
+            <option value="offline">Offline</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location / Link</label>
+          <input type="text" name="location" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" name="phone" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Открытие модального окна
+    document.querySelectorAll('.open-interview-modal').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('app_id').value = this.dataset.appId;
+        document.getElementById('interviewModal').style.display = 'flex';
+      });
+    });
+
+    // Закрытие модального окна
+    document.querySelector('.close').addEventListener('click', function () {
+      document.getElementById('interviewModal').style.display = 'none';
+    });
+
+    // Получение cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Сохранение интервью
+    document.getElementById('interviewForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = {
+        app_id: document.getElementById('app_id').value,
+        date: this.date.value,
+        time: this.time.value,
+        format: this.format.value,
+        location: this.location.value,
+        phone: this.phone.value
+      };
+
+      fetch("{% url 'save_interview' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          const row = document.querySelector(`[data-app-id="${formData.app_id}"]`).closest('tr');
+          row.classList.add('highlight-row');
+
+          const actionCell = row.querySelector('.actions-cell');
+          actionCell.innerHTML = `
+            <img src="{% static 'icons/accepted.svg' %}" alt="Interview Scheduled">
+            <img src="{% static 'icons/cancel.svg' %}" alt="Reject">
+          `;
+          document.getElementById('interviewModal').style.display = 'none';
+        } else {
+          alert('Error: ' + data.message);
+        }
+      });
+    });
+
+    // Отмена заявки
+    document.querySelectorAll('.cancel-application').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const appId = this.dataset.appId;
+
+        if (confirm("Вы уверены, что хотите отказать студенту?")) {
+          fetch('/hr/reject-application/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ app_id: appId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              alert("Студенту отправлено уведомление об отказе.");
+              const row = document.querySelector(`[data-app-id="${appId}"]`).closest('tr');
+              row.style.backgroundColor = '#f8d7da';
+              const actionsCell = row.querySelector('.actions-cell');
+              actionsCell.innerHTML = `<img src="{% static 'icons/cross.svg' %}" alt="Rejected">`;
+            } else {
+              alert('Ошибка: ' + data.message);
+            }
+          })
+          .catch(err => {
+            console.error('Fetch error:', err);
+            alert('Произошла ошибка при отправке запроса.');
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
